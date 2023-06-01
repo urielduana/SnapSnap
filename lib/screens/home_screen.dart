@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:snapsnap/screens/login_screen.dart';
+
+class MyHomeScreen extends StatefulWidget {
+  const MyHomeScreen({super.key});
+
+  @override
+  State<MyHomeScreen> createState() => _MyHomeScreenState();
+}
+
+class _MyHomeScreenState extends State<MyHomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('SnapSnap'),
+          backgroundColor: Colors.deepPurpleAccent,
+        ),
+        body: const Center(
+          child: Text('Welcome to SnapSnap'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'SnapSnap',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                      Text(
+                        'snap your moments',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  )),
+              ListTile(
+                title: const Text('Login'),
+                leading: const Icon(Icons.login),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => const LoginScreen()));
+                },
+              ),
+              ListTile(
+                title: const Text('Logout'),
+                leading: const Icon(Icons.logout),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ));
+  }
+}
