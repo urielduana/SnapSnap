@@ -28,7 +28,7 @@ class _UserFormState extends State<UserForm> {
 
   Future<void> _submitForm() async {
     final response = await http.post(
-      Uri.parse('https://tu-backend.com/api/users'), // Reemplaza con la URL correcta de tu backend
+      Uri.parse('https://8e56-2001-1260-22b-4a1-ec24-3e93-fc4-20c2.ngrok-free.app/register'), // Reemplaza con la URL correcta de tu backend
       body: {
         'name': _nameController.text,
         'email': _emailController.text,
