@@ -136,9 +136,7 @@ class RegisterEmailScreen extends StatelessWidget {
                     ),
                     TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const LoginScreen()));
+                          Navigator.pop(context);
                         },
                         style: TextButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
