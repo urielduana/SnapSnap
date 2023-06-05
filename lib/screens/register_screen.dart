@@ -1,35 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:snapsnap/screens/register_screen.dart';
+import 'package:snapsnap/screens/login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _RegisterScreenState extends State<RegisterScreen> {
+  int _currentIndex = 0;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  void navigateToNextScreen() {
+    print("Next");
+    if (_currentIndex < _screens.length - 1) {
+      setState(() {
+        _currentIndex++;
+      });
+    }
   }
 
+  void navigateToPreviousScreen() {
+    if (_currentIndex > 0) {
+      setState(() {
+        _currentIndex--;
+      });
+    }
+  }
+
+  late List<Widget> _screens;
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _screens = [
+      RegisterEmailScreen(
+        onNext: navigateToNextScreen,
+        onPrevious: navigateToPreviousScreen,
+      ),
+      const RegisterPasswordScreen(),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+    );
+  }
+}
+
+class RegisterEmailScreen extends StatelessWidget {
+  final VoidCallback onNext;
+  final VoidCallback onPrevious;
+
+  const RegisterEmailScreen({
+    Key? key,
+    required this.onPrevious,
+    required this.onNext,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.only(
@@ -41,10 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Hello, \nWelcome Back",
+                "Welcome to \nSnapSnap",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                "Verify your email to continue",
+                style: TextStyle(
+                  fontSize: 20,
                 ),
               ),
               Column(
@@ -54,20 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 50,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColorLight,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: const TextField(
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Email or Phone number"),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                     decoration: BoxDecoration(
@@ -75,17 +102,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(20))),
                     child: const TextField(
-                      obscureText: true,
                       decoration: InputDecoration(
-                          border: InputBorder.none, hintText: "Password"),
+                          border: InputBorder.none, hintText: "Email"),
                     ),
                   ),
                   const SizedBox(
                     height: 20,
-                  ),
-                  Text(
-                    "Forgot Password?",
-                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(
                     height: 20,
@@ -96,7 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          onNext();
+                        },
                         style: TextButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
                             backgroundColor: const Color(0xFF381E72),
@@ -105,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: const RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)))),
-                        child: const Text("Login",
+                        child: const Text("Next",
                             style: TextStyle(color: Colors.white))),
                     const SizedBox(
                       height: 20,
@@ -114,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  const RegisterScreen()));
+                                  const LoginScreen()));
                         },
                         style: TextButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
@@ -123,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: const RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)))),
-                        child: const Text("Create account")),
+                        child: const Text("Cancel")),
                   ],
                 ),
               )
@@ -133,4 +157,35 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+class RegisterPasswordScreen extends StatelessWidget {
+  const RegisterPasswordScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text("Password"),
+      ),
+    );
+  }
+}
+
+class UserData {
+  String? email;
+  String? username;
+  String? password;
+  String? name;
+  String? phone;
+  String? profileImage;
+
+  UserData({
+    this.email,
+    this.username,
+    this.password,
+    this.name,
+    this.phone,
+    this.profileImage,
+  });
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'color_schemes.dart';
+
 import 'package:snapsnap/screens/home_screen.dart';
+import 'package:snapsnap/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,9 +13,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: lightColorScheme,
+      ),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       title: 'MyApp',
-      home: MyHomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

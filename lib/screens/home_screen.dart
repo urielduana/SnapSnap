@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:snapsnap/screens/login_screen.dart';
+import 'package:snapsnap/screens/register_screen.dart';
 
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key});
@@ -14,7 +15,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('SnapSnap'),
-          backgroundColor: Colors.deepPurpleAccent,
         ),
         body: const Center(
           child: Text('Welcome to SnapSnap'),
@@ -55,10 +55,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 },
               ),
               ListTile(
-                title: const Text('Logout'),
-                leading: const Icon(Icons.logout),
+                title: const Text('Register'),
+                leading: const Icon(Icons.app_registration),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          const RegisterScreen()));
                 },
               ),
             ],
