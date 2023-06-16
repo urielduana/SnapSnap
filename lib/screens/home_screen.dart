@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/screens/login_screen.dart';
-import 'package:snapsnap/screens/register_screen.dart';
-
 import '../services/auth.dart';
 
 class MyHomeScreen extends StatefulWidget {
