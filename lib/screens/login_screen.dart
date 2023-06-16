@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:snapsnap/screens/register_screen.dart';
+
+import '../services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -62,8 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const BorderRadius.all(Radius.circular(20))),
                         child: TextFormField(
                           controller: _emailController,
-                          validator: (value) =>
-                              value!.isEmpty ? 'Enter your email' : null,
+                          // validator: (value) =>
+                          //     value!.isEmpty ? 'Enter your email' : null,
                           decoration: const InputDecoration(
                               hintText: "Email", border: InputBorder.none),
                         )),
@@ -80,8 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           enableSuggestions: false,
                           autocorrect: false,
                           controller: _passwordController,
-                          validator: (value) =>
-                              value!.isEmpty ? 'Enter your password' : null,
+                          // validator: (value) =>
+                          //     value!.isEmpty ? 'Enter your password' : null,
                           decoration: const InputDecoration(
                               hintText: "Password", border: InputBorder.none),
                         )),
@@ -105,7 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               "device_name": "mobile"
                             };
                             if (_formKey.currentState!.validate()) {
-                              print(credentials);
+                              Provider.of<Auth>(context, listen: false)
+                                  .login(credentials);
+                              Navigator.pop(context);
                             }
                           },
                           style: TextButton.styleFrom(

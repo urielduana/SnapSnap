@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:snapsnap/services/auth.dart';
 import 'color_schemes.dart';
 
 import 'package:snapsnap/screens/home_screen.dart';
 // import 'package:snapsnap/screens/login_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => Auth()),
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
