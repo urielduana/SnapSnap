@@ -39,23 +39,36 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
             return ListView(
               padding: EdgeInsets.zero,
               children: [
-                const DrawerHeader(
-                    decoration: BoxDecoration(
+                DrawerHeader(
+                    decoration: const BoxDecoration(
                       color: Colors.deepPurpleAccent,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage: NetworkImage(auth.user.avatar),
+                          radius: 30,
+                        ),
+                        const Text(
                           'SnapSnap',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'snap your moments',
                           style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic),
+                        ),
+                        // Welcome User text
+                        Text(
+                          'Welcome ${auth.user.name}',
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontStyle: FontStyle.italic),

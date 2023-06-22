@@ -5,7 +5,7 @@ Dio dio() {
   // ios
   // dio.options.baseUrl = 'http://localhost:8000/api/';
   // android
-  dio.options.baseUrl = '  https://5f25-200-188-1-212.ngrok-free.app/api/';
+  dio.options.baseUrl = 'http://10.0.2.2:8000/api/';
 
   dio.options.headers['accept'] = 'application/json';
 
