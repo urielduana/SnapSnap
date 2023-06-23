@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/screens/login_screen.dart';
 import '../services/auth.dart';
@@ -11,6 +12,21 @@ class MyHomeScreen extends StatefulWidget {
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
+  final storage = new FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    readToken();
+  }
+
+  void readToken() async {
+    String? token = await storage.read(key: 'token');
+    Provider.of<Auth>(context, listen: false).tryToken(token: token);
+
+    print(token);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

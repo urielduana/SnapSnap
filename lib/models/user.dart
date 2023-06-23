@@ -1,9 +1,9 @@
 class User {
-  String name;
-  String email;
-  String avatar;
-  String username;
-  String phone;
+  String? name;
+  String? email;
+  String? avatar;
+  String? username;
+  String? phone;
 
   User(
       {required this.name,
@@ -18,4 +18,12 @@ class User {
         avatar = json['avatar'],
         username = json['username'],
         phone = json['phone'];
+
+  void cleanUp() {
+    name = null;
+    email = null;
+    avatar = null;
+    username = null;
+    phone = null;
+  }
 }

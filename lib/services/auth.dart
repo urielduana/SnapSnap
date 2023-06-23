@@ -1,27 +1,28 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snapsnap/services/dio.dart';
 import 'package:snapsnap/models/user.dart';
 
 class Auth extends ChangeNotifier {
   bool _isAuth = false;
   late User _user;
-  late String _token;
+  late String? _token;
 
   bool get authenticated => _isAuth;
   User get user => _user;
+
+  final storage = new FlutterSecureStorage();
 
   void login(Map credentials) async {
     // print(credentials);
 
     try {
       Dio.Response response =
-          await dio().post('sactum/token', data: credentials);
+          await dio().post('/sactum/token', data: credentials);
       // print(response.data.toString());
       String token = response.data.toString();
       tryToken(token: token);
-      _isAuth = true;
-      notifyListeners();
     } catch (e) {
       print(e);
     }
@@ -37,6 +38,8 @@ class Auth extends ChangeNotifier {
         // print(response.data);
         _isAuth = true;
         _user = User.fromJson(response.data);
+        _token = token;
+        storeToken(token: token);
         notifyListeners();
         print(_user);
       } catch (e) {
@@ -45,8 +48,27 @@ class Auth extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  void storeToken({required String token}) async {
+    storage.write(key: 'token', value: token);
+  }
+
+  void logout() async {
+    try {
+      Dio.Response response = await dio().get('/user/revoke',
+          options: Dio.Options(headers: {'Authorization': 'Bearer $_token'}));
+      print(response.data);
+      cleanUp();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void cleanUp() async {
+    _user.cleanUp();
     _isAuth = false;
-    notifyListeners();
+    _token = null;
+
+    await storage.delete(key: 'token');
   }
 }
