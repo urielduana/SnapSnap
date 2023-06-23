@@ -34,6 +34,7 @@ class Auth extends ChangeNotifier {
       try {
         Dio.Response response = await dio().get('/user',
             options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
+        // print(response.data);
         _isAuth = true;
         _user = User.fromJson(response.data);
         notifyListeners();

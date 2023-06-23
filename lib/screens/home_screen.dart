@@ -46,11 +46,11 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage(auth.user.avatar),
-                          radius: 30,
-                        ),
+                        // CircleAvatar(
+                        //   backgroundColor: Colors.white,
+                        //   backgroundImage: NetworkImage(auth.user.avatar),
+                        //   radius: 30,
+                        // ),
                         const Text(
                           'SnapSnap',
                           style: TextStyle(
