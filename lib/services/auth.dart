@@ -41,7 +41,7 @@ class Auth extends ChangeNotifier {
         _token = token;
         storeToken(token: token);
         notifyListeners();
-        print(_user);
+        // print(_user);
       } catch (e) {
         print(e);
       }
@@ -56,7 +56,7 @@ class Auth extends ChangeNotifier {
     try {
       Dio.Response response = await dio().get('/user/revoke',
           options: Dio.Options(headers: {'Authorization': 'Bearer $_token'}));
-      print(response.data);
+      // print(response.data);
       cleanUp();
       notifyListeners();
     } catch (e) {
@@ -65,7 +65,7 @@ class Auth extends ChangeNotifier {
   }
 
   void cleanUp() async {
-    _user.cleanUp();
+    _user.clear();
     _isAuth = false;
     _token = null;
 

@@ -111,7 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (_formKey.currentState!.validate()) {
                               Provider.of<Auth>(context, listen: false)
                                   .login(credentials);
-                              Navigator.pop(context);
                             }
                           },
                           style: TextButton.styleFrom(

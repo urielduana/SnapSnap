@@ -19,7 +19,7 @@ class User {
         username = json['username'],
         phone = json['phone'];
 
-  void cleanUp() {
+  clear() {
     name = null;
     email = null;
     avatar = null;
