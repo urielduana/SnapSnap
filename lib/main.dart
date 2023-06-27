@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/components/sidebar_menu.dart';
 import 'package:snapsnap/screens/login_screen.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'color_schemes.dart';
@@ -73,7 +74,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     } else {
       return Navigator(
         pages: const [
-          MaterialPage(key: ValueKey('HomeScreen'), child: MyHomeScreen()),
+          MaterialPage(key: ValueKey('HomeScreen'), child: SideBar()),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );
