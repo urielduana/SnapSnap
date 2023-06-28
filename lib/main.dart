@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:snapsnap/components/sidebar_menu.dart';
 import 'package:snapsnap/screens/login_screen.dart';
 import 'package:snapsnap/services/auth.dart';
+import 'package:snapsnap/services/reg.dart';
 import 'color_schemes.dart';
 import 'package:snapsnap/screens/home_screen.dart';
 
@@ -11,6 +12,7 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => Auth()),
+      ChangeNotifierProvider(create: (context) => Register()),
     ],
     child: MyApp(),
   ));
@@ -74,7 +76,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     } else {
       return Navigator(
         pages: const [
-          MaterialPage(key: ValueKey('HomeScreen'), child: SideBar()),
+          MaterialPage(key: ValueKey('HomeScreen'), child: MyHomeScreen()),
         ],
         onPopPage: (route, result) => route.didPop(result),
       );
