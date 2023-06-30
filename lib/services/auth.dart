@@ -20,7 +20,7 @@ class Auth extends ChangeNotifier {
     try {
       Dio.Response response =
           await dio().post('/sactum/token', data: credentials);
-      // print(response.data.toString());
+      print(response.data.toString());
       String token = response.data.toString();
       tryToken(token: token);
     } catch (e) {

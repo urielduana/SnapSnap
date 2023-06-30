@@ -106,8 +106,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                               "email": _emailController.text,
                             };
                             Provider.of<Register>(context, listen: false)
-                                .verifyEmail(data);
-                            print(data);
+                                .verifyEmail(data, context);
                           }
                         },
                         style: TextButton.styleFrom(

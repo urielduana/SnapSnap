@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:snapsnap/components/sidebar_menu.dart';
 import 'package:snapsnap/screens/login_screen.dart';
+import 'package:snapsnap/screens/register/register_email_screen.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/services/reg.dart';
 import 'color_schemes.dart';
@@ -14,12 +14,12 @@ void main() {
       ChangeNotifierProvider(create: (context) => Auth()),
       ChangeNotifierProvider(create: (context) => Register()),
     ],
-    child: MyApp(),
+    child: const MyApp(),
   ));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,11 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       title: 'SnapSnap',
-      home: const AuthenticationWrapper(),
+      initialRoute: '/',
       routes: {
-        'login': (_) => const LoginScreen(),
-        'home': (_) => const MyHomeScreen(),
+        '/': (context) => const AuthenticationWrapper(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => RegisterEmailScreen(),
       },
     );
   }

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:snapsnap/models/user.dart';
+import 'package:snapsnap/screens/login_screen.dart';
 
 import 'dio.dart';
 
@@ -12,8 +13,7 @@ class Register extends ChangeNotifier {
   User get user => _user;
   bool get emailStatus => _emailStatus;
 
-  void verifyEmail(Map data) async {
-    print(data);
+  void verifyEmail(Map data, BuildContext context) async {
     try {
       Dio.Response response = await dio().post('/verifyEmail', data: data);
       print(response.data.toString());
@@ -21,6 +21,8 @@ class Register extends ChangeNotifier {
       if (response.statusCode == 200) {
         _emailStatus = false;
         notifyListeners();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
         _emailStatus = true;
         notifyListeners();
