@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:snapsnap/models/user.dart';
 import 'package:snapsnap/screens/register/register_password_screen.dart';
+import 'package:snapsnap/screens/register/register_profilephoto_screen.dart';
 import 'package:snapsnap/screens/register/register_username_screen.dart';
 
 import 'dio.dart';
@@ -63,10 +64,12 @@ class Register extends ChangeNotifier {
     }
   }
 
-  void passwordVerify(Map data) {
+  void verifyPassword(Map data, BuildContext context) {
     if (data['password'] == data['confirmPassword']) {
       _user.password = data['password'];
       _passwordStatus = false;
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const RegisterProfilePhotoScreen()));
       notifyListeners();
     } else {
       _passwordStatus = true;
