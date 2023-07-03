@@ -83,7 +83,7 @@ class _RegisterUsernameScreenState extends State<RegisterUsernameScreen> {
                         ),
                       ),
                       Visibility(
-                          visible: register.emailStatus,
+                          visible: register.usernameStatus,
                           child: Padding(
                             padding: EdgeInsets.only(left: 10, top: 10),
                             child: Text(
@@ -109,18 +109,13 @@ class _RegisterUsernameScreenState extends State<RegisterUsernameScreen> {
                         padding: const EdgeInsets.only(top: 15),
                         child: TextButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegisterPasswordScreen()));
-                            // if (_formKey.currentState!.validate()) {
-                            //   Map data = {
-                            //     "email": _emailController.text,
-                            //   };
-                            //   Provider.of<Register>(context, listen: false)
-                            //       .verifyEmail(data, context);
-                            // }
+                            if (_formKey.currentState!.validate()) {
+                              Map data = {
+                                "username": _usernameController.text,
+                              };
+                              Provider.of<Register>(context, listen: false)
+                                  .verifyUsername(data, context);
+                            }
                           },
                           style: TextButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),

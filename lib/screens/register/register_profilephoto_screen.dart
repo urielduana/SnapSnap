@@ -73,7 +73,9 @@ class _RegisterProfilePhotoScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 20, left: 50, right: 50),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Open gallery
+                    },
                     style: TextButton.styleFrom(
                       minimumSize: const Size.fromHeight(40),
                       backgroundColor: const Color(0xFF381E72),
