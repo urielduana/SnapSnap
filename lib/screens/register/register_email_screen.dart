@@ -14,14 +14,14 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
-  // init
   void initState() {
     super.initState();
-    _emailController.text = "admin@admon.com";
+    _emailController.text = "admin@admion.com";
   }
 
   @override
   Widget build(BuildContext context) {
+    final register = context.watch<Register>();
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: RegisterAppBar(),
@@ -37,7 +37,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                   const Padding(
                     padding: EdgeInsets.only(top: 20),
                     child: Text(
-                      "Welcome to \nSnapSnap",
+                      "Welcome to SnapSnap",
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     ),
                   ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: const EdgeInsets.only(top: 25),
@@ -80,25 +80,19 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                           ),
                         ),
                       ),
-                      Consumer<Register>(
-                        builder: (context, register, _) {
-                          if (register.emailStatus == true) {
-                            return const Padding(
-                              padding: EdgeInsets.only(left: 10, top: 10),
-                              child: Text(
-                                "This email address has been taken by another account.",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                ),
+                      Visibility(
+                          visible: register.emailStatus,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10, top: 10),
+                            child: Text(
+                              "This email address is already in use by another account.",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                               ),
-                            );
-                          } else {
-                            return Container(); // O cualquier otro widget que desees mostrar en caso de que el emailStatus sea falso
-                          }
-                        },
-                      ),
+                            ),
+                          )),
                     ],
                   ),
                 ],

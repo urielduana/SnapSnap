@@ -19,6 +19,8 @@ class Register extends ChangeNotifier {
       print(response.data.toString());
       // Verify if response  is status 200 or 401
       if (response.statusCode == 200) {
+        _user = User();
+        _user.email = data['email'];
         _emailStatus = false;
         notifyListeners();
         Navigator.of(context).push(MaterialPageRoute(

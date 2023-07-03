@@ -7,12 +7,12 @@ class User {
   String? password;
 
   User({
-    required this.name,
-    required this.email,
-    required this.avatar,
-    required this.username,
-    required this.phone,
-    required this.password,
+    this.name,
+    this.email,
+    this.avatar,
+    this.username,
+    this.phone,
+    this.password,
   });
 
   User.fromJson(Map<String, dynamic> json)
