@@ -161,7 +161,7 @@ class _RegisterUsernameScreenState extends State<RegisterUsernameScreen> {
                               ),
                             ),
                           ),
-                          child: const Text("Cancel"),
+                          child: const Text("Back"),
                         ),
                       ),
                     ],

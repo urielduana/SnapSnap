@@ -194,7 +194,7 @@ class _RegisterPasswordScreenState extends State<RegisterPasswordScreen> {
                               ),
                             ),
                           ),
-                          child: const Text("Cancel"),
+                          child: const Text("Back"),
                         ),
                       ),
                     ],

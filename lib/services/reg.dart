@@ -15,7 +15,7 @@ class Register extends ChangeNotifier {
 
   void verifyEmail(Map data, BuildContext context) async {
     try {
-      Dio.Response response = await dio().post('/verifyEmail', data: data);
+      Dio.Response response = await dio().post('/register/email', data: data);
       print(response.data.toString());
       // Verify if response  is status 200 or 401
       if (response.statusCode == 200) {
