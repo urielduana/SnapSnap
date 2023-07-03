@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/components/register_appbar.dart';
 import 'package:snapsnap/services/reg.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
@@ -12,26 +13,35 @@ class RegisterEmailScreen extends StatefulWidget {
 class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  @override
+  // init
+  void initState() {
+    super.initState();
+    _emailController.text = "admin@admon.com";
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      resizeToAvoidBottomInset: true,
+      appBar: RegisterAppBar(),
       body: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.only(left: 20, right: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Welcome to \nSnapSnap",
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text(
+                      "Welcome to \nSnapSnap",
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const Padding(
@@ -44,7 +54,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     ),
                   ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
                         margin: const EdgeInsets.only(top: 25),
@@ -93,63 +103,68 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 50),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: TextButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Map data = {
-                              "email": _emailController.text,
-                            };
-                            Provider.of<Register>(context, listen: false)
-                                .verifyEmail(data, context);
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50),
-                          backgroundColor: const Color(0xFF381E72),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 20,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(20),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: TextButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              Map data = {
+                                "email": _emailController.text,
+                              };
+                              Provider.of<Register>(context, listen: false)
+                                  .verifyEmail(data, context);
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: const Color(0xFF381E72),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 20,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20),
+                              ),
                             ),
                           ),
-                        ),
-                        child: const Text(
-                          "Next",
-                          style: TextStyle(color: Colors.white),
+                          child: const Text(
+                            "Next",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 20,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(20),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).dividerColor.withOpacity(0.2),
+                            minimumSize: const Size.fromHeight(50),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 20,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(20),
+                              ),
                             ),
                           ),
+                          child: const Text("Cancel"),
                         ),
-                        child: const Text("Cancel"),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:snapsnap/models/user.dart';
-import 'package:snapsnap/screens/login_screen.dart';
+import 'package:snapsnap/screens/register/register_username_screen.dart';
 
 import 'dio.dart';
 
@@ -21,8 +21,8 @@ class Register extends ChangeNotifier {
       if (response.statusCode == 200) {
         _emailStatus = false;
         notifyListeners();
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const RegisterUsernameScreen()));
       } else {
         _emailStatus = true;
         notifyListeners();
