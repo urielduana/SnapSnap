@@ -1,39 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:snapsnap/screens/register/register_email_screen.dart';
-import 'package:snapsnap/services/auth.dart';
+import 'package:snapsnap/components/register_appbar.dart';
+import 'package:snapsnap/screens/register/register_password_screen.dart';
+import 'package:snapsnap/services/reg.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterUsernameScreen extends StatefulWidget {
+  const RegisterUsernameScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterUsernameScreen> createState() => _RegisterUsernameScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class _RegisterUsernameScreenState extends State<RegisterUsernameScreen> {
+  final TextEditingController _usernameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   @override
   void initState() {
     super.initState();
-    _emailController.text = "admin@admin.com";
-    _passwordController.text = "password";
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+    _usernameController.text = "admin";
   }
 
   @override
   Widget build(BuildContext context) {
+    final register = context.watch<Register>();
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(),
+      appBar: RegisterAppBar(),
       body: Form(
         key: _formKey,
         child: Padding(
@@ -46,15 +39,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Padding(
                     padding: EdgeInsets.only(top: 20),
                     child: Text(
-                      "Hello, \nWelcome Back",
+                      "Choose your username",
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Text(
+                      "You can always change it later",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         margin: const EdgeInsets.only(top: 25),
@@ -71,49 +73,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         child: TextFormField(
-                          controller: _emailController,
+                          controller: _usernameController,
                           validator: (value) =>
-                              value!.isEmpty ? 'Enter your email' : null,
+                              value!.isEmpty ? 'Enter your username' : null,
                           decoration: const InputDecoration(
-                            hintText: "Email",
+                            hintText: "Username",
                             border: InputBorder.none,
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 15),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .primaryColorDark
-                              .withOpacity(0.4),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                        child: TextFormField(
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          controller: _passwordController,
-                          validator: (value) =>
-                              value!.isEmpty ? 'Enter your password' : null,
-                          decoration: const InputDecoration(
-                            hintText: "Password",
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 20, bottom: 20),
-                        child: Text(
-                          "Forgot Password?",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
+                      Visibility(
+                          visible: register.emailStatus,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10, top: 10),
+                            child: Text(
+                              "This username is already taken",
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          )),
                     ],
                   ),
                 ],
@@ -128,15 +109,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 15),
                         child: TextButton(
                           onPressed: () {
-                            Map credentials = {
-                              "email": _emailController.text,
-                              "password": _passwordController.text,
-                              "device_name": "mobile"
-                            };
-                            if (_formKey.currentState!.validate()) {
-                              Provider.of<Auth>(context, listen: false)
-                                  .login(credentials);
-                            }
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterPasswordScreen()));
+                            // if (_formKey.currentState!.validate()) {
+                            //   Map data = {
+                            //     "email": _emailController.text,
+                            //   };
+                            //   Provider.of<Register>(context, listen: false)
+                            //       .verifyEmail(data, context);
+                            // }
                           },
                           style: TextButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
@@ -152,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           child: const Text(
-                            "Login",
+                            "Next",
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -161,9 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.only(top: 15),
                         child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const RegisterEmailScreen()));
+                            Navigator.pop(context);
                           },
                           style: TextButton.styleFrom(
                             backgroundColor:
@@ -179,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          child: const Text("Sign Up"),
+                          child: const Text("Back"),
                         ),
                       ),
                     ],
