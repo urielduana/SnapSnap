@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/screens/feed_screen.dart';
 import 'package:snapsnap/screens/login_screen.dart';
+import 'bottom_navigation_bar_screen.dart';
 import '../services/auth.dart';
 
 class MyHomeScreen extends StatefulWidget {
@@ -31,6 +33,17 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (BuildContext context) =>
                             const LoginScreen()));
+                  },
+                ),
+                ListTile(
+                  title: const Text('Feed'),
+                  leading: const Icon(Icons.photo),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CustomBottomNavigationBar()),
+                    );
                   },
                 ),
               ],
