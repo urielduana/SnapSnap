@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:snapsnap/services/upImg.dart';
 
 class RegisterProfilePhotoScreen extends StatefulWidget {
   const RegisterProfilePhotoScreen({super.key});
@@ -12,6 +15,74 @@ class RegisterProfilePhotoScreen extends StatefulWidget {
 
 class _RegisterProfilePhotoScreenState
     extends State<RegisterProfilePhotoScreen> {
+  File? _selectedImage;
+  //subir imagen a el controlador
+  final TextEditingController _imageController = TextEditingController();
+
+  Future<void> _selectAndUpImage() async {
+    final picker = ImagePicker();
+
+    // Seleccionar imagen de la galeria o tomar una foto
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    final pickedFile = await picker.pickImage(
+                      source: ImageSource.camera,
+                    );
+                    if (pickedFile != null) {
+                      setState(() {
+                        _selectedImage = File(pickedFile.path);
+                        _imageController.text = _selectedImage!.path;
+                      });
+                      //obtner la ruta de la imagen
+                      String filePath = _selectedImage!.path;
+
+                      //Subir la img al servidor
+                      Map<String, dynamic> data = {'image': filePath};
+                      UpImg _UpImg = UpImg();
+                      _UpImg.uploadAvatar(data, context);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    final pickedFile = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (pickedFile != null) {
+                      setState(() {
+                        _selectedImage = File(pickedFile.path);
+                      });
+                      //obtener la ruta
+                      String filePath = _selectedImage!.path;
+
+                      //subir la img al servidor
+                      Map<String, dynamic> data = {'image': filePath};
+                      UpImg _UpImg = UpImg();
+                      _UpImg.uploadAvatar(data, context);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,21 +114,27 @@ class _RegisterProfilePhotoScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
                   child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        width: 5,
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          width: 5,
+                        ),
+                        borderRadius: BorderRadius.circular(100),
                       ),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Icon(
-                      CupertinoIcons.camera,
-                      size: 75,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
+                      child: _selectedImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.file(
+                                _selectedImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Icon(
+                              CupertinoIcons.camera,
+                              size: 75,
+                            )),
                 ),
                 const Padding(
                   padding: EdgeInsets.only(top: 20, left: 25, right: 25),
@@ -73,7 +150,9 @@ class _RegisterProfilePhotoScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 20, left: 50, right: 50),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _selectAndUpImage();
+                    },
                     style: TextButton.styleFrom(
                       minimumSize: const Size.fromHeight(40),
                       backgroundColor: const Color(0xFF381E72),
@@ -100,20 +179,7 @@ class _RegisterProfilePhotoScreenState
                     Padding(
                       padding: const EdgeInsets.only(top: 15),
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const RegisterProfilePhotoScreen()));
-                          // if (_formKey.currentState!.validate()) {
-                          //   Map data = {
-                          //     "email": _emailController.text,
-                          //   };
-                          //   Provider.of<Register>(context, listen: false)
-                          //       .verifyEmail(data, context);
-                          // }
-                        },
+                        onPressed: () {},
                         style: TextButton.styleFrom(
                           minimumSize: const Size.fromHeight(50),
                           backgroundColor: const Color(0xFF381E72),
@@ -128,7 +194,7 @@ class _RegisterProfilePhotoScreenState
                           ),
                         ),
                         child: const Text(
-                          "Skip",
+                          "Finish",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
