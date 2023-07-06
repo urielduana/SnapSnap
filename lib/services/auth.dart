@@ -21,7 +21,7 @@ class Auth extends ChangeNotifier {
 
     try {
       Dio.Response response =
-          await dio().post('/sactum/token', data: credentials);
+          await dio().post('/sanctum/token', data: credentials);
       // print(response.data.toString());
       String token = response.data.toString();
       tryToken(token: token);

@@ -71,12 +71,24 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Provider.of<Auth>(context, listen: false).logout();
               },
             ),
+            // Feed Screen
+            ListTile(
+              title: const Text('Feed'),
+              leading: const Icon(Icons.feed),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeedScreen()),
+                );
+              },
+            ),
           ],
         )),
         bottomNavigationBar: BottomNavigationBar(items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+            // go to feed screen
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.camera_alt), label: 'Camera'),
