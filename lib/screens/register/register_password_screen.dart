@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/components/register_appbar.dart';
-import 'package:snapsnap/screens/register/register_profilephoto_screen.dart';
 import 'package:snapsnap/services/reg.dart';
 
 class RegisterPasswordScreen extends StatefulWidget {

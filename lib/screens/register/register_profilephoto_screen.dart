@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:snapsnap/services/reg.dart';
 import 'package:snapsnap/services/upImg.dart';
 
 class RegisterProfilePhotoScreen extends StatefulWidget {
