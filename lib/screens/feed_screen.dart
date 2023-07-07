@@ -53,11 +53,11 @@ class _FeedScreenState extends State<FeedScreen> {
           return Container(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    // Imagen perfil
+                    // Profile photo
                     Container(
                       width: 50,
                       height: 50,
@@ -181,6 +181,11 @@ class _FeedScreenState extends State<FeedScreen> {
                     ),
                   ],
                 ),
+                Divider(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  thickness: 0.5,
+                  height: 50,
+                )
               ],
             ),
           );
