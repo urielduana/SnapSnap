@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:snapsnap/services/upTags.dart';
 
 class TagSelectScreen extends StatefulWidget {
   @override
@@ -9,25 +10,105 @@ class TagSelectScreen extends StatefulWidget {
 class _TagSelectScreenState extends State<TagSelectScreen> {
   final List<Map<String, dynamic>> tags = [
     {
-      'name': 'Animales',
-      'icon': Icons.tag_faces,
+      'id': 1,
+      'name': 'nature',
+      'icon': Icons.nature,
     },
     {
-      'name': 'Deporte',
-      'icon': Icons.tag_faces,
+      'id': 2,
+      'name': 'food',
+      'icon': Icons.fastfood,
     },
     {
-      'name': 'Ciencia',
-      'icon': Icons.tag_faces,
+      'id': 3,
+      'name': 'travel',
+      'icon': Icons.flight_takeoff,
     },
     {
-      'name': 'Estudio',
-      'icon': Icons.tag_faces,
+      'id': 4,
+      'name': 'fashion',
+      'icon': Icons.shopping_bag,
     },
     {
-      'name': 'Hot',
-      'icon': Icons.tag_faces,
+      'id': 5,
+      'name': 'fitness',
+      'icon': Icons.fitness_center,
     },
+    {
+      'id': 6,
+      'name': 'art',
+      'icon': Icons.palette,
+    },
+    {
+      'id': 7,
+      'name': 'music',
+      'icon': Icons.music_note,
+    },
+    {
+      'id': 8,
+      'name': 'photography',
+      'icon': Icons.camera_alt,
+    },
+    {
+      'id': 9,
+      'name': 'technology',
+      'icon': Icons.computer,
+    },
+    {
+      'id': 10,
+      'name': 'sports',
+      'icon': Icons.sports_soccer,
+    },
+    {
+      'id': 11,
+      'name': 'movies',
+      'icon': Icons.movie,
+    },
+    {
+      'id': 12,
+      'name': 'books',
+      'icon': Icons.book,
+    },
+    {
+      'id': 13,
+      'name': 'health',
+      'icon': Icons.favorite,
+    },
+    {
+      'id': 14,
+      'name': 'quotes',
+      'icon': Icons.format_quote,
+    },
+    {
+      'id': 15,
+      'name': 'cars',
+      'icon': Icons.directions_car,
+    },
+    {
+      'id': 16,
+      'name': 'beauty',
+      'icon': Icons.face,
+    },
+    {
+      'id': 17,
+      'name': 'business',
+      'icon': Icons.business,
+    },
+    {
+      'id': 18,
+      'name': 'humor',
+      'icon': Icons.emoji_emotions,
+    },
+    {
+      'id': 19,
+      'name': 'education',
+      'icon': Icons.school,
+    },
+    {
+      'id': 20,
+      'name': 'animals',
+      'icon': Icons.tag_faces,
+    }
   ];
 
   List<Map<String, dynamic>> selectedTags = [];
@@ -42,47 +123,28 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
       if (selectedTags.any((element) => mapEquals(element, tag))) {
         selectedTags.removeWhere((element) => mapEquals(element, tag));
       } else {
-        selectedTags.add(tag);
+        selectedTags.add({
+          'name': tag['name'],
+          'id': tag['id'],
+        });
       }
     });
   }
 
-  void showSelectedTagsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Tags seleccionados'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: selectedTags
-                  .map((tag) => Text(tag['name']))
-                  .toList(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cerrar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void SelectedTags() {
+    updateTags(selectedTags);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select Tags'),
+        title: const Text('Select Tags'),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.check),
-            onPressed: showSelectedTagsDialog,
+            icon: const Icon(Icons.check),
+            onPressed: SelectedTags,
           ),
         ],
       ),
@@ -108,11 +170,14 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return Colors.deepPurpleAccent; // Color cuando se presiona el botón
+                          return Colors
+                              .deepPurpleAccent; // Color cuando se presiona el botón
                         }
                         return isSelected
-                            ? Color.fromARGB(255, 43, 38, 53) // Color cuando está seleccionado
-                            : Color(0xFF381E72); // Color cuando no está seleccionado
+                            ? const Color.fromARGB(255, 43, 38,
+                                53) // Color cuando está seleccionado
+                            : const Color(
+                                0xFF381E72); // Color cuando no está seleccionado
                       },
                     ),
                   ),
@@ -120,7 +185,6 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
                 ),
               ],
             ),
-            leading: Icon(tag['icon']),
             onTap: () {
               toggleTagSelection(tag);
             },
