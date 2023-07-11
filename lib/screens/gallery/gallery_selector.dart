@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:snapsnap/models/file.dart';
 import 'package:flutter_storage_path/flutter_storage_path.dart';
 
@@ -27,7 +28,7 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
     var imagePath = await StoragePath.imagesPath;
     var images = jsonDecode(imagePath!) as List;
     files = images.map<FileModel>((e) => FileModel.fromJson(e)).toList();
-    if (files != null && files.isNotEmpty) {
+    if (files.isNotEmpty) {
       setState(() {
         selectedModel = files[0];
         image = files[0].files[0];
@@ -77,7 +78,10 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Return image in File type
+                      Navigator.of(context).pop(File(image!));
+                    },
                     child: Text(
                       'Next',
                       style: TextStyle(
@@ -89,7 +93,7 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
               ],
             ),
             const Divider(),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.45,
                 child: image != null
                     ? Image.file(
@@ -101,7 +105,7 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
             const Divider(),
             selectedModel == null && selectedModel!.files.isEmpty
                 ? Container()
-                : Container(
+                : SizedBox(
                     height: MediaQuery.of(context).size.height * 0.37,
                     child: GridView.builder(
                       gridDelegate:
@@ -128,17 +132,33 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
                   )
           ]),
         ),
+        // Open the camera and take a picture
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Open camera
+            openCamera();
+          },
+          shape: const CircleBorder(),
+          child: const Icon(CupertinoIcons.camera),
+        ),
       );
     }
   }
 
   List<DropdownMenuItem<FileModel>> getItems() {
     return files
-            .map((e) => DropdownMenuItem(
-                  value: e,
-                  child: Text(e.folder),
-                ))
-            .toList() ??
-        [];
+        .map((e) => DropdownMenuItem(
+              value: e,
+              child: Text(e.folder),
+            ))
+        .toList();
+  }
+
+  void openCamera() async {
+    final XFile? image =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image != null) {
+      Navigator.of(context).pop(File(image.path));
+    }
   }
 }
