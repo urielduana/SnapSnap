@@ -2,9 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
-import 'package:snapsnap/services/upImg.dart';
 
 class RegisterProfilePhotoScreen extends StatefulWidget {
   const RegisterProfilePhotoScreen({super.key});
@@ -17,72 +15,6 @@ class RegisterProfilePhotoScreen extends StatefulWidget {
 class _RegisterProfilePhotoScreenState
     extends State<RegisterProfilePhotoScreen> {
   File? _selectedImage;
-  //subir imagen a el controlador
-  final TextEditingController _imageController = TextEditingController();
-
-  Future<void> _selectAndUpImage() async {
-    final picker = ImagePicker();
-
-    // Seleccionar imagen de la galeria o tomar una foto
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Image Source'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: const Text('Camera'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    final pickedFile = await picker.pickImage(
-                      source: ImageSource.camera,
-                    );
-                    if (pickedFile != null) {
-                      setState(() {
-                        _selectedImage = File(pickedFile.path);
-                        _imageController.text = _selectedImage!.path;
-                      });
-                      //obtner la ruta de la imagen
-                      String filePath = _selectedImage!.path;
-
-                      //Subir la img al servidor
-                      Map<String, dynamic> data = {'image': filePath};
-                      UpImg _UpImg = UpImg();
-                      _UpImg.uploadAvatar(data, context);
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  child: const Text('Gallery'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    final pickedFile = await picker.pickImage(
-                      source: ImageSource.gallery,
-                    );
-                    if (pickedFile != null) {
-                      setState(() {
-                        _selectedImage = File(pickedFile.path);
-                      });
-                      //obtener la ruta
-                      String filePath = _selectedImage!.path;
-
-                      //subir la img al servidor
-                      Map<String, dynamic> data = {'image': filePath};
-                      UpImg _UpImg = UpImg();
-                      _UpImg.uploadAvatar(data, context);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +42,6 @@ class _RegisterProfilePhotoScreenState
                             ),
                           ),
                         ),
-                        // Circle with a cupertino icon in the middle of a camera in the center of the screen
                       ],
                     ),
                     Column(
@@ -158,11 +89,19 @@ class _RegisterProfilePhotoScreenState
                           padding: const EdgeInsets.only(
                               top: 20, left: 50, right: 50),
                           child: TextButton(
-                            onPressed: () {
-                              // _selectAndUpImage();
-                              Navigator.of(context).push(MaterialPageRoute(
+                            onPressed: () async {
+                              File? selectedImage = await Navigator.push<File?>(
+                                context,
+                                MaterialPageRoute(
                                   builder: (context) =>
-                                      const GallerySelectorScreen()));
+                                      const GallerySelectorScreen(),
+                                ),
+                              );
+                              if (selectedImage != null) {
+                                setState(() {
+                                  _selectedImage = selectedImage;
+                                });
+                              }
                             },
                             style: TextButton.styleFrom(
                               minimumSize: const Size.fromHeight(40),
