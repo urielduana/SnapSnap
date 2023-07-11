@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
-
+import 'package:snapsnap/screens/tags/tag_select.dart';
 class RegisterProfilePhotoScreen extends StatefulWidget {
   const RegisterProfilePhotoScreen({super.key});
 
@@ -129,7 +129,11 @@ class _RegisterProfilePhotoScreenState
                             Padding(
                               padding: const EdgeInsets.only(top: 15),
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                   Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context)=>TagSelectScreen())
+                                  );
+                                },
                                 style: TextButton.styleFrom(
                                   minimumSize: const Size.fromHeight(50),
                                   backgroundColor: const Color(0xFF381E72),
@@ -144,7 +148,7 @@ class _RegisterProfilePhotoScreenState
                                   ),
                                 ),
                                 child: const Text(
-                                  "Finish",
+                                  "Skip",
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
