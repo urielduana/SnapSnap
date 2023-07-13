@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'comment_screen.dart';
@@ -38,6 +39,20 @@ class _FeedScreenState extends State<FeedScreen> {
     '#lake',
     '#me'
   ]; // Lista de hashtags
+  final List<String> usernames = [
+    '@anaa123',
+    '@diana123',
+    '@anastacia123',
+    '@roberto123',
+    '@alberto123'
+  ]; // Lista de nombres de usuario
+  final List<String> timeAgo = [
+    '1 min ago',
+    '2 min ago',
+    '3 min ago',
+    '4 min ago',
+    '5 min ago'
+  ]; // Lista de tiempo transcurrido
 
   void toggleLike(int index) {
     setState(() {
@@ -63,63 +78,87 @@ class _FeedScreenState extends State<FeedScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    // Profile photo
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: NetworkImage(profileImgUrls[index]),
-                          fit: BoxFit.cover,
-                        ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 30),
+                  child: Row(
+                    children: [
+                      // Profile photo
+                      CircleAvatar(
+                        maxRadius: 28,
+                        backgroundImage: NetworkImage(profileImgUrls[index]),
                       ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    // Columna con el nombre de usuario y el hashtag
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Nombre de usuario
-                        Text(
-                          users[index],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                        const SizedBox(height: 4.0),
-                        // HashtaG
-                        Row(
+                      // Columna con el nombre de usuario y el hashtag
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Text(
-                                '#hashtag',
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
+                            // Nombre de usuario
+                            Text(
+                              users[index],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  usernames[index],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                Text(
+                                  timeAgo[index],
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            // Hashtag with border
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: Text(
+                                    hashtags[index],
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 10,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
+
                 const SizedBox(height: 8.0),
                 // Carrusel de imágenes o imagen principal
                 imageUrls.length == 1
@@ -159,60 +198,71 @@ class _FeedScreenState extends State<FeedScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(
+                    ElevatedButton(
+                      child: Row(
+                        children: [
+                          Icon(
                             likesCount[index] > 100
                                 ? Icons.favorite
                                 : Icons.favorite_border_rounded,
                             color: likesCount[index] > 100
                                 ? const Color(0xFF381E72)
-                                : Theme.of(context).colorScheme.outline,
+                                : Theme.of(context).colorScheme.onSurface,
                           ),
-                          onPressed: () => toggleLike(index),
-                        ),
-                        Text('${likesCount[index]} me gusta'),
-                      ],
+                          SizedBox(width: 4.0),
+                          Text('${likesCount[index]} likes',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              )),
+                        ],
+                      ),
+                      onPressed: () => toggleLike(index),
                     ),
                     Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Icon(
-                            Icons.comment_outlined,
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        Text('${commentsCount[index]} comentarios'),
-                      ],
-                    ),
-                    Text('${likesCount[index]} likes'),
-                    SizedBox(width: 8.0),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CommentScreen(
-                              imageUrl: imageUrls[index],
-                              user: users[index],
-                              profileImgUrl: profileImgUrls[index],
-                              hashtag: hashtags[index],
-                              imagesCount: imageUrls.length,
-                              likesCount: likesCount[index],
-                              commentsCount: commentsCount[index],
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CommentScreen(
+                                  imageUrl: imageUrls[index],
+                                  user: users[index],
+                                  profileImgUrl: profileImgUrls[index],
+                                  hashtag: hashtags[index],
+                                  imagesCount: imageUrls.length,
+                                  likesCount: likesCount[index],
+                                  commentsCount: commentsCount[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 1),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.chat_bubble_text,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  SizedBox(width: 4.0),
+                                  Text(
+                                    '${commentsCount[index]} comments',
+                                    style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.comment_outlined),
-                          SizedBox(width: 4.0),
-                          Text('${commentsCount[index]} comments'),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

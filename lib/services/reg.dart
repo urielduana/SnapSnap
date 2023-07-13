@@ -27,6 +27,7 @@ class Register extends ChangeNotifier {
       // Verify if response  is status 200 or 401
       if (response.statusCode == 200) {
         _user.email = data['email'];
+        _user.device_name = data['device_name'];
         _emailStatus = false;
         notifyListeners();
         Navigator.of(context).push(MaterialPageRoute(
@@ -70,8 +71,8 @@ class Register extends ChangeNotifier {
       _user.password = data['password'];
       _passwordStatus = false;
       sendUserDataToApi(context);
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const RegisterProfilePhotoScreen()));
+      // Navigator.of(context).push(MaterialPageRoute(
+      //     builder: (context) => const RegisterProfilePhotoScreen()));
       notifyListeners();
     } else {
       _passwordStatus = true;
@@ -80,46 +81,45 @@ class Register extends ChangeNotifier {
   }
 
   void uploadAvatar(Map<String, dynamic> data, BuildContext context) async {
-  try {
-    Dio.FormData formData = Dio.FormData();
-    formData.files.add(MapEntry(
-        'image', Dio.MultipartFile.fromFileSync(data['image'])));
+    try {
+      Dio.FormData formData = Dio.FormData();
+      formData.files.add(
+          MapEntry('image', Dio.MultipartFile.fromFileSync(data['image'])));
 
-    Dio.Response response = await dio().post('/img', data: formData);
+      Dio.Response response = await dio().post('/img', data: formData);
 
-    if (response.statusCode == 200) {
-      _user = User();
-      _user.avatar = response.data['avatar'];
-      notifyListeners();
-    } else {
-      print('Error: ${response.statusCode}');
-      print(response.data);
+      if (response.statusCode == 200) {
+        _user = User();
+        _user.avatar = response.data['avatar'];
+        notifyListeners();
+      } else {
+        print('Error: ${response.statusCode}');
+        print(response.data);
+      }
+    } catch (e) {
+      print('Exception: $e');
     }
-  } catch (e) {
-    print('Exception: $e');
   }
-}
 
-void sendUserDataToApi(BuildContext context) async {
-  try {
-    print(_user.toJson()); // Imprimir los datos antes de enviarlos a la API
-    Dio.Response response = await dio().post('/register', data: _user.toJson());
-    if (response.statusCode == 200) {
-      //imprimir response
-      print(response.toString());
-      // Procesar la respuesta o realizar alguna acción adicional si es necesario
-      Navigator.of(context).pop();
-    } else {
-      // Manejar el caso de un error en la respuesta de la API
-      print('Error: ${response.statusCode}');
-      print(response.data);
+  void sendUserDataToApi(BuildContext context) async {
+    try {
+      print(_user.toJson()); // Imprimir los datos antes de enviarlos a la API
+      Dio.Response response =
+          await dio().post('/register', data: _user.toJson());
+      if (response.statusCode == 200) {
+        //imprimir response
+        print(response.toString());
+        // Procesar la respuesta o realizar alguna acción adicional si es necesario
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const RegisterProfilePhotoScreen()));
+      } else {
+        // Manejar el caso de un error en la respuesta de la API
+        print('Error: ${response.statusCode}');
+        print(response.data);
+      }
+    } catch (e) {
+      // Manejar cualquier excepción que ocurra durante la solicitud
+      print('Exception: $e');
     }
-  } catch (e) {
-    // Manejar cualquier excepción que ocurra durante la solicitud
-    print('Exception: $e');
   }
-}
-
-
-
 }

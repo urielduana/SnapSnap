@@ -7,6 +7,7 @@ class User {
   String? username;
   String? phone;
   String? password;
+  String? device_name;
   int? followers;
   int? following;
   late List<Collocation> collocation;
@@ -21,6 +22,7 @@ class User {
     this.collocation = const [],
     this.followers,
     this.following,
+    this.device_name,
   });
 
   User.fromJson(Map<String, dynamic> json)
@@ -29,7 +31,8 @@ class User {
         avatar = json['avatar'],
         username = json['username'],
         password = json['password'],
-        phone = json['phone'];
+        phone = json['phone'],
+        device_name = json['device_name'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -39,6 +42,7 @@ class User {
       'username': username,
       'phone': phone,
       'password': password,
+      'device_name': device_name,
     };
   }
 
@@ -52,5 +56,6 @@ class User {
     collocation = [];
     followers = null;
     following = null;
+    device_name = null;
   }
 }

@@ -39,6 +39,11 @@ class _RegisterProfilePhotoScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: RegisterAppBar(),
+      // AppBar(
+      //   title: const Text("Sign Up"),
+      //   centerTitle: true,
+      //   automaticallyImplyLeading: false,
+      // ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -93,7 +98,8 @@ class _RegisterProfilePhotoScreenState
                           ),
                         ),
                         const Padding(
-                          padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+                          padding:
+                              EdgeInsets.only(top: 20, left: 25, right: 25),
                           child: Text(
                             "Add a profile photo so your friends know it's you",
                             textAlign: TextAlign.center,
@@ -107,8 +113,7 @@ class _RegisterProfilePhotoScreenState
                               top: 20, left: 50, right: 50),
                           child: TextButton(
                             onPressed: () async {
-                              File? selectedImage =
-                                  await Navigator.push<File?>(
+                              File? selectedImage = await Navigator.push<File?>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
@@ -196,30 +201,6 @@ class _RegisterProfilePhotoScreenState
                                   ),
                                 ),
                               ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Theme.of(context)
-                                      .dividerColor
-                                      .withOpacity(0.2),
-                                  minimumSize: const Size.fromHeight(50),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 50,
-                                    vertical: 20,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(20),
-                                    ),
-                                  ),
-                                ),
-                                child: const Text("Back"),
-                              ),
-                            ),
                           ],
                         ),
                       ),
