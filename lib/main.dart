@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const AuthenticationWrapper(),
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => FeedScreen(),
+        '/register': (context) => const RegisterEmailScreen(),
       },
     );
   }

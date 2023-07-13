@@ -115,6 +115,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       Map data = {
                                         "email": _emailController.text,
+                                        "device_name": "mobile",
                                       };
                                       Provider.of<Register>(context,
                                               listen: false)
