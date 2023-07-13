@@ -53,22 +53,22 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SnapSnap'),
+        title: const Text('SnapSnap'),
       ),
       body: ListView.builder(
         itemCount: users.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    // Imagen perfil
+                    // Profile photo
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 50,
+                      height: 50,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -77,7 +77,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     // Columna con el nombre de usuario y el hashtag
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,24 +85,42 @@ class _FeedScreenState extends State<FeedScreen> {
                         // Nombre de usuario
                         Text(
                           users[index],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
                           ),
                         ),
-                        SizedBox(height: 4.0),
-                        // Hashtag
-                        Text(
-                          hashtags[index],
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: Colors.blueGrey,
-                          ),
+                        const SizedBox(height: 4.0),
+                        // HashtaG
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Text(
+                                '#hashtag',
+                                style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ],
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 // Carrusel de imágenes o imagen principal
                 imageUrls.length == 1
                     ? Image.network(
@@ -125,7 +143,8 @@ class _FeedScreenState extends State<FeedScreen> {
                               return Container(
                                 width: 400,
                                 height: 400,
-                                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Image.network(
                                   url,
                                   fit: BoxFit.cover,
@@ -135,20 +154,38 @@ class _FeedScreenState extends State<FeedScreen> {
                           );
                         }).toList(),
                       ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 // Contador de Me gusta y comentarios
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        likesCount[index] > 100
-                            ? Icons.favorite
-                            : Icons.favorite_border_rounded,
-                        color:
-                            likesCount[index] > 100 ? Colors.red : Colors.black,
-                      ),
-                      onPressed: () => toggleLike(index),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            likesCount[index] > 100
+                                ? Icons.favorite
+                                : Icons.favorite_border_rounded,
+                            color: likesCount[index] > 100
+                                ? const Color(0xFF381E72)
+                                : Theme.of(context).colorScheme.outline,
+                          ),
+                          onPressed: () => toggleLike(index),
+                        ),
+                        Text('${likesCount[index]} me gusta'),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.comment_outlined,
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        Text('${commentsCount[index]} comentarios'),
+                      ],
                     ),
                     Text('${likesCount[index]} likes'),
                     SizedBox(width: 8.0),
@@ -179,6 +216,11 @@ class _FeedScreenState extends State<FeedScreen> {
                     ),
                   ],
                 ),
+                Divider(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  thickness: 0.5,
+                  height: 50,
+                )
               ],
             ),
           );

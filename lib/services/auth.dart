@@ -6,10 +6,12 @@ import 'package:snapsnap/models/user.dart';
 
 class Auth extends ChangeNotifier {
   bool _isAuth = false;
+  bool _authDenied = false;
   late User _user;
   late String? _token;
 
   bool get authenticated => _isAuth;
+  bool get authDenied => _authDenied;
   User get user => _user;
 
   final storage = new FlutterSecureStorage();
@@ -19,12 +21,18 @@ class Auth extends ChangeNotifier {
 
     try {
       Dio.Response response =
-          await dio().post('/sactum/token', data: credentials);
+          await dio().post('/sanctum/token', data: credentials);
       // print(response.data.toString());
       String token = response.data.toString();
       tryToken(token: token);
     } catch (e) {
-      // print(e);
+      if (e is Dio.DioException) {
+        if (e.response!.statusCode == 422) {
+          // print('Invalid credentials');
+          _authDenied = true;
+          notifyListeners();
+        }
+      }
     }
   }
 
