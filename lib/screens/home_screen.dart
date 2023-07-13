@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/models/post.dart';
+import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
 import 'package:snapsnap/screens/feed_screen.dart';
+import 'package:snapsnap/screens/notifications_screen.dart';
+import 'package:snapsnap/screens/profile/profile_screen.dart';
 import '../services/auth.dart';
 
 class MyHomeScreen extends StatefulWidget {
@@ -63,19 +68,50 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 )),
             ListTile(
               title: const Text('Logout'),
-              leading: const Icon(Icons.logout),
+              leading: const Icon(CupertinoIcons.square_arrow_left),
               onTap: () {
                 Provider.of<Auth>(context, listen: false).logout();
               },
             ),
-            // Feed Screen
             ListTile(
               title: const Text('Feed'),
-              leading: const Icon(Icons.feed),
+              leading: const Icon(CupertinoIcons.news),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => FeedScreen()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Profile'),
+              leading: const Icon(CupertinoIcons.profile_circled),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Navigation Bar'),
+              leading: const Icon(CupertinoIcons.profile_circled),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CustomBottomNavigationBar()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Notifications'),
+              leading: const Icon(CupertinoIcons.news),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationScreen()),
                 );
               },
             ),
