@@ -13,6 +13,7 @@ class Register extends ChangeNotifier {
   bool _emailStatus = false;
   bool _usernameStatus = false;
   bool _passwordStatus = false;
+  bool _selectedImage = false;
 
   User get user => _user;
   bool get emailStatus => _emailStatus;
@@ -68,6 +69,7 @@ class Register extends ChangeNotifier {
     if (data['password'] == data['confirmPassword']) {
       _user.password = data['password'];
       _passwordStatus = false;
+      sendUserDataToApi(context);
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => const RegisterProfilePhotoScreen()));
       notifyListeners();
@@ -76,4 +78,48 @@ class Register extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void uploadAvatar(Map<String, dynamic> data, BuildContext context) async {
+  try {
+    Dio.FormData formData = Dio.FormData();
+    formData.files.add(MapEntry(
+        'image', Dio.MultipartFile.fromFileSync(data['image'])));
+
+    Dio.Response response = await dio().post('/img', data: formData);
+
+    if (response.statusCode == 200) {
+      _user = User();
+      _user.avatar = response.data['avatar'];
+      notifyListeners();
+    } else {
+      print('Error: ${response.statusCode}');
+      print(response.data);
+    }
+  } catch (e) {
+    print('Exception: $e');
+  }
+}
+
+void sendUserDataToApi(BuildContext context) async {
+  try {
+    print(_user.toJson()); // Imprimir los datos antes de enviarlos a la API
+    Dio.Response response = await dio().post('/register', data: _user.toJson());
+    if (response.statusCode == 200) {
+      //imprimir response
+      print(response.toString());
+      // Procesar la respuesta o realizar alguna acción adicional si es necesario
+      Navigator.of(context).pop();
+    } else {
+      // Manejar el caso de un error en la respuesta de la API
+      print('Error: ${response.statusCode}');
+      print(response.data);
+    }
+  } catch (e) {
+    // Manejar cualquier excepción que ocurra durante la solicitud
+    print('Exception: $e');
+  }
+}
+
+
+
 }

@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/screens/notifications_screen.dart';
 import 'feed_screen.dart';
+import 'search_screen.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
@@ -14,11 +14,10 @@ class CustomBottomNavigationBar extends StatefulWidget {
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   List<Widget> tabs = [
     FeedScreen(),
-    const Center(child: Text("Search", style: TextStyle(color: Colors.white))),
-    const Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
-    const NotificationScreen(),
-    const Center(
-        child: Text("Add item", style: TextStyle(color: Colors.white))),
+    SearchScreen(),
+    Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
+    NotificationScreen(),
+    Center(child: Text("Add item", style: TextStyle(color: Colors.white))),
   ];
 
   int currentPage = 0;
@@ -37,8 +36,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade400,
         onPressed: () => setPage(4),
-        child: const Icon(
-          CupertinoIcons.add,
+        child: Icon(
+          Icons.add,
           color: Colors.white,
           size: 30,
         ),
@@ -46,16 +45,16 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
           color: Colors.grey.shade900,
-          shape: const CircularNotchedRectangle(),
+          shape: CircularNotchedRectangle(),
           child: Container(
               height: 80,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: Icon(
-                      CupertinoIcons.home,
+                      Icons.home,
                       color: currentPage == 0 ? Colors.white : Colors.grey,
                       size: 30,
                     ),
@@ -63,16 +62,16 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   ),
                   IconButton(
                     icon: Icon(
-                      CupertinoIcons.search,
+                      Icons.search,
                       color: currentPage == 0 ? Colors.white : Colors.grey,
                       size: 30,
                     ),
                     onPressed: () => setPage(1),
                   ),
-                  const SizedBox.shrink(),
+                  SizedBox.shrink(),
                   IconButton(
                     icon: Icon(
-                      CupertinoIcons.person,
+                      Icons.person,
                       color: currentPage == 0 ? Colors.white : Colors.grey,
                       size: 30,
                     ),
@@ -80,7 +79,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   ),
                   IconButton(
                     icon: Icon(
-                      CupertinoIcons.bell,
+                      Icons.notifications_outlined,
                       color: currentPage == 0 ? Colors.white : Colors.grey,
                       size: 30,
                     ),
