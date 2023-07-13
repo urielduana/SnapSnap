@@ -1,3 +1,5 @@
+import 'package:snapsnap/models/collocation.dart';
+
 class User {
   String? name;
   String? email;
@@ -5,6 +7,9 @@ class User {
   String? username;
   String? phone;
   String? password;
+  int? followers;
+  int? following;
+  late List<Collocation> collocation;
 
   User({
     this.name,
@@ -13,6 +18,9 @@ class User {
     this.username,
     this.phone,
     this.password,
+    this.collocation = const [],
+    this.followers,
+    this.following,
   });
 
   User.fromJson(Map<String, dynamic> json)
@@ -30,5 +38,8 @@ class User {
     username = null;
     phone = null;
     password = null;
+    collocation = [];
+    followers = null;
+    following = null;
   }
 }
