@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/screens/feed_screen.dart';
 import 'package:snapsnap/screens/login_screen.dart';
 import 'package:snapsnap/screens/register/register_email_screen.dart';
 import 'package:snapsnap/services/auth.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const AuthenticationWrapper(),
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => RegisterEmailScreen(),
+        '/register': (context) => FeedScreen(),
       },
     );
   }

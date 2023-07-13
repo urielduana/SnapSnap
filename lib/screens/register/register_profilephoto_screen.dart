@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
+import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
 
 class RegisterProfilePhotoScreen extends StatefulWidget {
   const RegisterProfilePhotoScreen({super.key});
@@ -102,10 +103,14 @@ class _RegisterProfilePhotoScreenState
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const RegisterProfilePhotoScreen()));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CustomBottomNavigationBar()),
+                          );
+                          // MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         const RegisterProfilePhotoScreen()));
                           // if (_formKey.currentState!.validate()) {
                           //   Map data = {
                           //     "email": _emailController.text,

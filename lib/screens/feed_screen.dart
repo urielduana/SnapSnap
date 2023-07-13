@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'comment_screen.dart';
 
 class FeedScreen extends StatefulWidget {
   @override
@@ -30,6 +31,13 @@ class _FeedScreenState extends State<FeedScreen> {
     'Roberto',
     'Alberto'
   ]; // Lista de usuarios
+  final List<String> hashtags = [
+    '#me',
+    '#mylove',
+    '#yummy',
+    '#lake',
+    '#me'
+  ]; // Lista de hashtags
 
   void toggleLike(int index) {
     setState(() {
@@ -84,7 +92,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         SizedBox(height: 4.0),
                         // Hashtag
                         Text(
-                          '#hashtag',
+                          hashtags[index],
                           style: TextStyle(
                             fontStyle: FontStyle.italic,
                             color: Colors.blueGrey,
@@ -142,11 +150,33 @@ class _FeedScreenState extends State<FeedScreen> {
                       ),
                       onPressed: () => toggleLike(index),
                     ),
-                    Text('${likesCount[index]} me gusta'),
+                    Text('${likesCount[index]} likes'),
                     SizedBox(width: 8.0),
-                    Icon(Icons.comment_outlined),
-                    SizedBox(width: 4.0),
-                    Text('${commentsCount[index]} comentarios'),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CommentScreen(
+                              imageUrl: imageUrls[index],
+                              user: users[index],
+                              profileImgUrl: profileImgUrls[index],
+                              hashtag: hashtags[index],
+                              imagesCount: imageUrls.length,
+                              likesCount: likesCount[index],
+                              commentsCount: commentsCount[index],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.comment_outlined),
+                          SizedBox(width: 4.0),
+                          Text('${commentsCount[index]} comments'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ],

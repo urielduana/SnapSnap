@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:snapsnap/screens/notifications_screen.dart';
 import 'feed_screen.dart';
+import 'search_screen.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   List<Widget> tabs = [
     FeedScreen(),
-    Center(child: Text("Search", style: TextStyle(color: Colors.white))),
+    SearchScreen(),
     Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
     NotificationScreen(),
     Center(child: Text("Add item", style: TextStyle(color: Colors.white))),
