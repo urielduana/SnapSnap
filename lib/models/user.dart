@@ -23,6 +23,17 @@ class User {
         password = json['password'],
         phone = json['phone'];
 
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'avatar': avatar,
+      'username': username,
+      'phone': phone,
+      'password': password,
+    };
+  }
+
   clear() {
     name = null;
     email = null;
