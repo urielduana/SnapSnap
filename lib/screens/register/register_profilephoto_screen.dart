@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 import 'package:snapsnap/screens/tags/tag_select.dart';
+//import 'package:snapsnap/services/upImg.dart';
+import 'package:snapsnap/services/reg.dart';
+
 class RegisterProfilePhotoScreen extends StatefulWidget {
-  const RegisterProfilePhotoScreen({super.key});
+  const RegisterProfilePhotoScreen({Key? key}) : super(key: key);
 
   @override
   State<RegisterProfilePhotoScreen> createState() =>
@@ -15,6 +18,21 @@ class RegisterProfilePhotoScreen extends StatefulWidget {
 class _RegisterProfilePhotoScreenState
     extends State<RegisterProfilePhotoScreen> {
   File? _selectedImage;
+
+  final Register upImgService = Register();
+
+  void _uploadPhoto(BuildContext context) async {
+    if (_selectedImage != null) {
+      Map<String, dynamic> data = {'image': _selectedImage!.path};
+      upImgService.uploadAvatar(data, context);
+    }
+
+    // Navigate to the next screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TagSelectScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,32 +68,31 @@ class _RegisterProfilePhotoScreenState
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
                           child: Container(
-                              width: 150,
-                              height: 150,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                  width: 5,
-                                ),
-                                borderRadius: BorderRadius.circular(100),
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                width: 5,
                               ),
-                              child: _selectedImage != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Image.file(
-                                        _selectedImage!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )
-                                  : const Icon(
-                                      CupertinoIcons.camera,
-                                      size: 75,
-                                    )),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: _selectedImage != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.file(
+                                      _selectedImage!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : const Icon(
+                                    CupertinoIcons.camera,
+                                    size: 75,
+                                  ),
+                          ),
                         ),
                         const Padding(
-                          padding:
-                              EdgeInsets.only(top: 20, left: 25, right: 25),
+                          padding: EdgeInsets.only(top: 20, left: 25, right: 25),
                           child: Text(
                             "Add a profile photo so your friends know it's you",
                             textAlign: TextAlign.center,
@@ -84,13 +101,13 @@ class _RegisterProfilePhotoScreenState
                             ),
                           ),
                         ),
-                        //Button to upload a photo with width of 150
                         Padding(
                           padding: const EdgeInsets.only(
                               top: 20, left: 50, right: 50),
                           child: TextButton(
                             onPressed: () async {
-                              File? selectedImage = await Navigator.push<File?>(
+                              File? selectedImage =
+                                  await Navigator.push<File?>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
@@ -126,33 +143,58 @@ class _RegisterProfilePhotoScreenState
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15),
-                              child: TextButton(
-                                onPressed: () {
-                                   Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (context)=>TagSelectScreen())
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size.fromHeight(50),
-                                  backgroundColor: const Color(0xFF381E72),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 50,
-                                    vertical: 20,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(20),
+                            if (_selectedImage != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 15),
+                                child: TextButton(
+                                  onPressed: () {
+                                    _uploadPhoto(context);
+                                  },
+                                  style: TextButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(50),
+                                    backgroundColor: const Color(0xFF381E72),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 50,
+                                      vertical: 20,
+                                    ),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                child: const Text(
-                                  "Skip",
-                                  style: TextStyle(color: Colors.white),
+                                  child: const Text(
+                                    "Next",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
-                            ),
+                            if (_selectedImage == null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 15),
+                                child: TextButton(
+                                  onPressed: () {
+                                    _uploadPhoto(context);
+                                  },
+                                  style: TextButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(50),
+                                    backgroundColor: const Color(0xFF381E72),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 50,
+                                      vertical: 20,
+                                    ),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Skip",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
                             Padding(
                               padding: const EdgeInsets.only(top: 15),
                               child: TextButton(
@@ -184,7 +226,7 @@ class _RegisterProfilePhotoScreenState
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

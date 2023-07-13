@@ -1,19 +1,16 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/services/upTags.dart';
+import 'package:snapsnap/screens/home_screen.dart';
 
 class TagSelectScreen extends StatefulWidget {
+  const TagSelectScreen({super.key});
+
   @override
   _TagSelectScreenState createState() => _TagSelectScreenState();
 }
 
 class _TagSelectScreenState extends State<TagSelectScreen> {
   final List<Map<String, dynamic>> tags = [
-    {
-      'id': 1,
-      'name': 'nature',
-      'icon': Icons.nature,
-    },
     {
       'id': 2,
       'name': 'food',
@@ -112,6 +109,7 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
   ];
 
   List<Map<String, dynamic>> selectedTags = [];
+  bool tagsSelected = false;
 
   bool mapEquals(Map<String, dynamic> a, Map<String, dynamic> b) {
     final nameEquals = a['name'] == b['name'];
@@ -128,12 +126,31 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
           'id': tag['id'],
         });
       }
+
+      tagsSelected = selectedTags.isNotEmpty;
     });
   }
-
   void SelectedTags() {
-    updateTags(selectedTags);
+    if (selectedTags.isEmpty) {
+      // No se ha seleccionado ningún tag, enviar el valor predeterminado
+      updateTags([
+        {
+          'name': 'public',
+          'id': 1,
+        }
+      ]);
+    } else {
+      // Se han seleccionado tags, enviar los tags seleccionados
+      updateTags(selectedTags);
+    }
+
+    // Redirigir al usuario a la pantalla de inicio
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyHomeScreen()),
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +159,9 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
         title: const Text('Select Tags'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
+          TextButton(
             onPressed: SelectedTags,
+            child: Text(tagsSelected ? 'Next' : 'Skip'),
           ),
         ],
       ),
@@ -170,14 +187,11 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return Colors
-                              .deepPurpleAccent; // Color cuando se presiona el botón
+                          return Colors.deepPurpleAccent;
                         }
                         return isSelected
-                            ? const Color.fromARGB(255, 43, 38,
-                                53) // Color cuando está seleccionado
-                            : const Color(
-                                0xFF381E72); // Color cuando no está seleccionado
+                            ? const Color.fromARGB(255, 43, 38, 53)
+                            : const Color(0xFF381E72);
                       },
                     ),
                   ),
