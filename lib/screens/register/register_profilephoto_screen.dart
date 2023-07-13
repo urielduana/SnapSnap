@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
+import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 
 class RegisterProfilePhotoScreen extends StatefulWidget {
