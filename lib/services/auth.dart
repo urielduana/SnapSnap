@@ -57,10 +57,9 @@ class Auth extends ChangeNotifier {
   }
 
   void storeToken({required String token}) async {
+    //clean secure storage token key if exists
+    await storage.delete(key: 'token');
     storage.write(key: 'token', value: token);
-    storage.write(key: 'name', value: _user.name);
-    storage.write(key: 'email', value: _user.email);
-    storage.write(key: 'avatar', value: _user.avatar);
   }
 
   void logout() async {
@@ -81,8 +80,5 @@ class Auth extends ChangeNotifier {
     _token = null;
 
     await storage.delete(key: 'token');
-    await storage.delete(key: 'name');
-    await storage.delete(key: 'email');
-    await storage.delete(key: 'avatar');
   }
 }

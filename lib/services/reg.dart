@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:snapsnap/main.dart';
 import 'package:snapsnap/models/user.dart';
+import 'package:snapsnap/screens/home_screen.dart';
 import 'package:snapsnap/screens/register/register_password_screen.dart';
 import 'package:snapsnap/screens/register/register_profilephoto_screen.dart';
 import 'package:snapsnap/screens/register/register_username_screen.dart';
@@ -14,11 +17,14 @@ class Register extends ChangeNotifier {
   bool _usernameStatus = false;
   bool _passwordStatus = false;
   bool _selectedImage = false;
+  late String? _token;
 
   User get user => _user;
   bool get emailStatus => _emailStatus;
   bool get usernameStatus => _usernameStatus;
   bool get passwordStatus => _passwordStatus;
+
+  final storage = new FlutterSecureStorage();
 
   void verifyEmail(Map data, BuildContext context) async {
     try {
@@ -103,23 +109,38 @@ class Register extends ChangeNotifier {
 
   void sendUserDataToApi(BuildContext context) async {
     try {
-      print(_user.toJson()); // Imprimir los datos antes de enviarlos a la API
+      // Send data to API
       Dio.Response response =
           await dio().post('/register', data: _user.toJson());
       if (response.statusCode == 200) {
-        //imprimir response
+        // print response
         print(response.toString());
-        // Procesar la respuesta o realizar alguna acción adicional si es necesario
+        // Save token in secure storage
+        _token = response.data.toString();
+        print(_token);
+        storeToken(token: _token!);
+        print(storage.read(key: 'token'));
+        notifyListeners();
+        // Next screen to upload profile photo
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(builder: (context) => MyApp()),
+        // );
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const RegisterProfilePhotoScreen()));
+        // Return pop until to specific screen
+        // Navigator.of(context).popUntil((route) => route.isFirst);
       } else {
         // Manejar el caso de un error en la respuesta de la API
         print('Error: ${response.statusCode}');
         print(response.data);
       }
     } catch (e) {
-      // Manejar cualquier excepción que ocurra durante la solicitud
+      // Manage exceptions in the request
       print('Exception: $e');
     }
+  }
+
+  void storeToken({required String token}) async {
+    storage.write(key: 'token', value: token);
   }
 }
