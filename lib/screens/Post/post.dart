@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class Post extends StatefulWidget {
   final File? selectedImage;
@@ -35,7 +34,9 @@ class _PostState extends State<Post> {
     'Education',
     'Animals',
   ];
-  List<String> _selectedTags = []; // Lista para mantener los tags seleccionados
+
+  String? _selectedTag; // Tag seleccionado por el usuario
+  final List<String> _selectedTags = []; // Lista para mantener los tags seleccionados
 
   @override
   void initState() {
@@ -76,14 +77,19 @@ class _PostState extends State<Post> {
               ),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: null,
+            DropdownButton<String>(
+              value: _selectedTag,
               onChanged: (String? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _selectedTags.add(newValue);
-                  });
-                }
+                setState(() {
+                  _selectedTag = newValue;
+                  if (_selectedTag != null) {
+                    if (!_selectedTags.contains(_selectedTag!)) {
+                      _selectedTags.add(_selectedTag!);
+                    }
+                    _selectedTag =
+                        null;
+                  }
+                });
               },
               hint: const Text('Tags'),
               items: _availableTags.map((String tag) {
@@ -124,22 +130,23 @@ class _PostState extends State<Post> {
             ElevatedButton(
               onPressed: _isPublishButtonEnabled
                   ? () {
+                      //mensaje de dialogo de prueba para ver si funciona con el boton para cerrar el mensaje de dialogo
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Post publicado'),
-                          content:
-                              const Text('Tu post ha sido publicado con éxito'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Aceptar'),
-                            ),
-                          ],
-                        ),
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Post published'),
+                            content: const Text('Your post has been published'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     }
                   : null,
