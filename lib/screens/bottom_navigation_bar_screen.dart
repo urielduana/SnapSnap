@@ -40,7 +40,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     File? selectedImage = await Navigator.push<File?>(
       context,
       MaterialPageRoute(
-        builder: (context) => const GallerySelectorScreen(),
+        builder: (context) => const GallerySelectorScreen(selectedImages: [],),
       ),
     );
 

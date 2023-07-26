@@ -117,7 +117,7 @@ class _RegisterProfilePhotoScreenState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const GallerySelectorScreen(),
+                                      const GallerySelectorScreen(selectedImages: [],),
                                 ),
                               );
                               if (selectedImage != null) {
