@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:snapsnap/services/post_service.dart';
 
 class Post extends StatefulWidget {
   final File? selectedImage;
@@ -10,34 +11,41 @@ class Post extends StatefulWidget {
   _PostState createState() => _PostState();
 }
 
+class _Tag {
+  final int id;
+  final String name;
+
+  _Tag(this.id, this.name);
+}
+
 class _PostState extends State<Post> {
   final List<File> _selectedImages = [];
   final TextEditingController _captionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
-  final List<String> _availableTags = [
-    'Food',
-    'Travel',
-    'Fashion',
-    'Fitness',
-    'Art',
-    'Music',
-    'Photography',
-    'Technology',
-    'Sports',
-    'Movies',
-    'Books',
-    'Health',
-    'Quotes',
-    'Cars',
-    'Beauty',
-    'Business',
-    'Humor',
-    'Education',
-    'Animals',
+  final List<_Tag> _availableTags = [
+    _Tag(3, 'Food'),
+    _Tag(4, 'Travel'),
+    _Tag(5, 'Fashion'),
+    _Tag(6, 'Fitness'),
+    _Tag(7, 'Art'),
+    _Tag(8, 'Music'),
+    _Tag(9, 'Photography'),
+    _Tag(10, 'Technology'),
+    _Tag(11, 'Sports'),
+    _Tag(12, 'Movies'),
+    _Tag(13, 'Books'),
+    _Tag(14, 'Health'),
+    _Tag(15, 'Quotes'),
+    _Tag(16, 'Cars'),
+    _Tag(17, 'Beauty'),
+    _Tag(18, 'Business'),
+    _Tag(19, 'Humor'),
+    _Tag(20, 'Education'),
+    _Tag(21, 'Animals'),
   ];
 
-  String? _selectedTag; // Tag seleccionado por el usuario
-  final List<String> _selectedTags = []; // Lista para mantener los tags seleccionados
+  _Tag? _selectedTag; // Tag seleccionado por el usuario
+  final List<_Tag> _selectedTags = []; // Lista para mantener los tags seleccionados
 
   @override
   void initState() {
@@ -45,6 +53,7 @@ class _PostState extends State<Post> {
     if (widget.selectedImage != null) {
       _selectedImages.add(widget.selectedImage!);
     }
+    _selectedTag = _availableTags[0]; // Asignar el tag por defecto al inicio
   }
 
   @override
@@ -53,7 +62,7 @@ class _PostState extends State<Post> {
       appBar: AppBar(
         title: const Text('New post'),
       ),
-      body: SingleChildScrollView( // Agregamos el SingleChildScrollView para permitir desplazamiento hacia abajo
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -61,19 +70,35 @@ class _PostState extends State<Post> {
             children: [
               const SizedBox(height: 16),
               SizedBox(
-                height: 200, // Ajustar el alto de las imágenes en la previsualización
+                height: 200,
                 child: ListView.builder(
-                  scrollDirection: Axis.horizontal, // Mostrar las imágenes en una fila horizontal
+                  scrollDirection: Axis.horizontal,
                   itemCount: _selectedImages.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: 150, // Ancho fijo para cada imagen
-                        child: Image.file(
-                          _selectedImages[index],
-                          fit: BoxFit.cover, // Ajustar la imagen para cubrir el contenedor
-                        ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 150,
+                            child: Image.file(
+                              _selectedImages[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: IconButton(
+                              icon: Icon(Icons.close),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedImages.removeAt(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -85,11 +110,11 @@ class _PostState extends State<Post> {
                 child: const Text('Add Images'),
               ),
               const SizedBox(height: 16),
-              DropdownButton<String>(
+              DropdownButton<_Tag>(
                 value: _selectedTag,
-                onChanged: (String? newValue) {
+                onChanged: (tag) {
                   setState(() {
-                    _selectedTag = newValue;
+                    _selectedTag = tag;
                     if (_selectedTag != null) {
                       if (!_selectedTags.contains(_selectedTag!)) {
                         _selectedTags.add(_selectedTag!);
@@ -99,10 +124,10 @@ class _PostState extends State<Post> {
                   });
                 },
                 hint: const Text('Tags'),
-                items: _availableTags.map((String tag) {
-                  return DropdownMenuItem<String>(
+                items: _availableTags.map((tag) {
+                  return DropdownMenuItem<_Tag>(
                     value: tag,
-                    child: Text(tag),
+                    child: Text(tag.name),
                   );
                 }).toList(),
               ),
@@ -111,7 +136,7 @@ class _PostState extends State<Post> {
                 spacing: 8,
                 children: _selectedTags.map((tag) {
                   return Chip(
-                    label: Text(tag),
+                    label: Text(tag.name),
                     onDeleted: () {
                       setState(() {
                         _selectedTags.remove(tag);
@@ -135,29 +160,11 @@ class _PostState extends State<Post> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _isPublishButtonEnabled
-                    ? () {
-                        //mensaje de dialogo de prueba para ver si funciona con el boton para cerrar el mensaje de dialogo
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Post published'),
-                              content: const Text('Your post has been published'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    : null,
+                onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
                 child: const Text('Publish'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16), // Ajustar el padding vertical según tus necesidades
+                ),
               ),
             ],
           ),
@@ -172,6 +179,27 @@ class _PostState extends State<Post> {
       setState(() {
         _selectedImages.addAll(images.map((image) => File(image.path)));
       });
+    }
+  }
+
+  Future<void> _uploadDataToServer() async {
+    try {
+      // Obtener una lista de IDs de tags seleccionados
+      List<int> tagIds = _selectedTags.map((tag) => tag.id).toList();
+
+      if (tagIds.isEmpty) {
+        // Si no se seleccionó ningún tag, agregar el tag por defecto con ID 1
+        tagIds.add(1);
+      }
+
+      await PostService.uploadPost(
+        caption: _captionController.text,
+        tags: tagIds, // Enviar solo los IDs de los tags seleccionados
+        images: _selectedImages,
+      );
+      // Si el envío fue exitoso, puedes mostrar algún mensaje al usuario aquí.
+    } catch (e) {
+      // Si hubo un error al enviar los datos, puedes manejarlo aquí.
     }
   }
 }
