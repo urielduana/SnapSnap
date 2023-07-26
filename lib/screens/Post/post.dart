@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:snapsnap/services/post_service.dart';
 import 'package:dio/dio.dart';
 
-
 class Post extends StatefulWidget {
   final File? selectedImage;
   const Post({Key? key, this.selectedImage}) : super(key: key);
@@ -19,14 +18,12 @@ class _Tag {
 
   _Tag(this.id, this.name);
 }
-final List<File> _selectedImages = [];
-
 
 class _PostState extends State<Post> {
   final List<File> _selectedImages = [];
   final TextEditingController _captionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
-  final List<_Tag> _availableTags = [
+   final List<_Tag> _availableTags = [
     _Tag(3, 'Food'),
     _Tag(4, 'Travel'),
     _Tag(5, 'Fashion'),
@@ -57,7 +54,7 @@ class _PostState extends State<Post> {
     if (widget.selectedImage != null) {
       _selectedImages.add(widget.selectedImage!);
     }
-    _selectedTag = _availableTags[0]; // Asignar el tag por defecto al inicio
+    _selectedTag = null; // Asignar null para que aparezca "Tags" en el DropdownButton
   }
 
   @override
@@ -128,12 +125,18 @@ class _PostState extends State<Post> {
                   });
                 },
                 hint: const Text('Tags'),
-                items: _availableTags.map((tag) {
-                  return DropdownMenuItem<_Tag>(
-                    value: tag,
-                    child: Text(tag.name),
-                  );
-                }).toList(),
+                items: [
+                  DropdownMenuItem<_Tag>(
+                    value: null,
+                    child: const Text('Tags'),
+                  ),
+                  ..._availableTags.map((tag) {
+                    return DropdownMenuItem<_Tag>(
+                      value: tag,
+                      child: Text(tag.name),
+                    );
+                  }).toList(),
+                ],
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -178,42 +181,38 @@ class _PostState extends State<Post> {
   }
 
   Future<void> _selectImagesFromGallery() async {
-  final List<XFile>? images = await ImagePicker().pickMultiImage();
-  if (images != null) {
-    setState(() {
-      _selectedImages.addAll(images.map((image) => File(image.path)));
-    });
-  }
-}
-
-
- Future<void> _uploadDataToServer() async {
-  try {
-    // Obtener una lista de IDs de tags seleccionados
-    List<int> tagIds = _selectedTags.map((tag) => tag.id).toList();
-
-    if (tagIds.isEmpty) {
-      // Si no se seleccionó ningún tag, agregar el tag por defecto con ID 1
-      tagIds.add(1);
+    final List<XFile>? images = await ImagePicker().pickMultiImage();
+    if (images != null) {
+      setState(() {
+        _selectedImages.addAll(images.map((image) => File(image.path)));
+      });
     }
-
-    print('Data to be sent:');
-    print('caption: ${_captionController.text}');
-    print('tags: $tagIds');
-    print('images: $_selectedImages');
-
-    await PostService.uploadPost(
-      caption: _captionController.text,
-      tags: tagIds, // Enviar solo los IDs de los tags seleccionados
-      images: _selectedImages,
-    );
-    // Si el envío fue exitoso, puedes mostrar algún mensaje al usuario aquí.
-  } catch (e) {
-    // Si hubo un error al enviar los datos, puedes manejarlo aquí.
-    print('Error al enviar los datos al servidor: $e');
   }
-}
 
+  Future<void> _uploadDataToServer() async {
+    try {
+      // Obtener una lista de IDs de tags seleccionados
+      List<int> tagIds = _selectedTags.map((tag) => tag.id).toList();
 
+      if (tagIds.isEmpty) {
+        // Si no se seleccionó ningún tag, agregar el tag por defecto con ID 1
+        tagIds.add(1);
+      }
 
+      print('Data to be sent:');
+      print('caption: ${_captionController.text}');
+      print('tags: $tagIds');
+      print('images: $_selectedImages');
+
+      await PostService.uploadPost(
+        caption: _captionController.text,
+        tags: tagIds, // Enviar solo los IDs de los tags seleccionados
+        images: _selectedImages,
+      );
+      // Si el envío fue exitoso, puedes mostrar algún mensaje al usuario aquí.
+    } catch (e) {
+      // Si hubo un error al enviar los datos, puedes manejarlo aquí.
+      print('Error al enviar los datos al servidor: $e');
+    }
+  }
 }
