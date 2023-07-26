@@ -6,19 +6,21 @@ class PostService {
 
   static Future<void> uploadPost({
     required String caption,
-    required List<int> tags, // Cambiar el tipo de datos a List<int> para los tags
+    required List<int> tags,
     required List<File> images,
   }) async {
     try {
       // Preparar los datos para enviar al servidor
       FormData formData = FormData();
       formData.fields.add(MapEntry('caption', caption));
-      formData.fields.add(MapEntry('tags', tags.map((tagId) => tagId.toString()).join(','))); // Convertir los IDs de int a String
-      
+      formData.fields.add(MapEntry('tags', tags.map((tagId) => tagId.toString()).join(',')));
+
       for (int i = 0; i < images.length; i++) {
+        File file = images[i];
+        String fileName = file.path.split('/').last;
         formData.files.add(MapEntry(
-          'images',
-          await MultipartFile.fromFile(images[i].path),
+          'images[]', // Use 'images[]' to represent an array of images
+          await MultipartFile.fromFile(file.path, filename: fileName),
         ));
       }
 
@@ -30,6 +32,7 @@ class PostService {
 
       // Procesar la respuesta del servidor si es necesario.
       if (response.statusCode == 200) {
+        print('Response from server:');
         print(response.data);
       } else {
         print('Error en la solicitud al servidor.');
