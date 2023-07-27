@@ -23,7 +23,7 @@ class _PostState extends State<Post> {
   final List<File> _selectedImages = [];
   final TextEditingController _captionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
-   final List<_Tag> _availableTags = [
+  final List<_Tag> _availableTags = [
     _Tag(3, 'Food'),
     _Tag(4, 'Travel'),
     _Tag(5, 'Fashion'),
@@ -46,7 +46,8 @@ class _PostState extends State<Post> {
   ];
 
   _Tag? _selectedTag; // Tag seleccionado por el usuario
-  final List<_Tag> _selectedTags = []; // Lista para mantener los tags seleccionados
+  final List<_Tag> _selectedTags =
+      []; // Lista para mantener los tags seleccionados
 
   @override
   void initState() {
@@ -54,11 +55,17 @@ class _PostState extends State<Post> {
     if (widget.selectedImage != null) {
       _selectedImages.add(widget.selectedImage!);
     }
-    _selectedTag = null; // Asignar null para que aparezca "Tags" en el DropdownButton
+    _selectedTag =
+        null; // Asignar null para que aparezca "Tags" en el DropdownButton
   }
 
   @override
   Widget build(BuildContext context) {
+    bool hasCaption = _captionController.text.trim().isNotEmpty;
+    bool hasImages = _selectedImages.isNotEmpty;
+
+    _updatePublishButtonState(hasCaption, hasImages);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('New post'),
@@ -126,9 +133,9 @@ class _PostState extends State<Post> {
                 },
                 hint: const Text('Tags'),
                 items: [
-                  DropdownMenuItem<_Tag>(
+                  const DropdownMenuItem<_Tag>(
                     value: null,
-                    child: const Text('Tags'),
+                    child: Text('Tags'),
                   ),
                   ..._availableTags.map((tag) {
                     return DropdownMenuItem<_Tag>(
@@ -170,7 +177,9 @@ class _PostState extends State<Post> {
                 onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
                 child: const Text('Publish'),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16), // Ajustar el padding vertical según tus necesidades
+                  padding: const EdgeInsets.symmetric(
+                      vertical:
+                          16), // Ajustar el padding vertical según tus necesidades
                 ),
               ),
             ],
@@ -178,6 +187,12 @@ class _PostState extends State<Post> {
         ),
       ),
     );
+  }
+
+  void _updatePublishButtonState(bool hasCaption, bool hasImages) {
+    setState(() {
+      _isPublishButtonEnabled = hasCaption && hasImages;
+    });
   }
 
   Future<void> _selectImagesFromGallery() async {
