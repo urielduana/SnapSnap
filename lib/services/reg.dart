@@ -1,24 +1,22 @@
 import 'package:dio/dio.dart' as Dio;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:snapsnap/main.dart';
 import 'package:snapsnap/models/user.dart';
-import 'package:snapsnap/screens/home_screen.dart';
 import 'package:snapsnap/screens/register/register_password_screen.dart';
 import 'package:snapsnap/screens/register/register_profilephoto_screen.dart';
 import 'package:snapsnap/screens/register/register_username_screen.dart';
+import 'package:snapsnap/screens/tags/tag_select.dart';
 
 import 'dio.dart';
 
 // Register class
 class Register extends ChangeNotifier {
-  var _user = User();
+  final _user = User();
   bool _emailStatus = false;
   bool _usernameStatus = false;
   bool _passwordStatus = false;
-  bool _selectedImage = false;
-  late String? _token;
-
+  String _token = '';
   User get user => _user;
   bool get emailStatus => _emailStatus;
   bool get usernameStatus => _usernameStatus;
@@ -86,24 +84,20 @@ class Register extends ChangeNotifier {
     }
   }
 
-  void uploadAvatar(Map<String, dynamic> data, BuildContext context) async {
+  void uploadProfilePhoto(FormData formData, BuildContext context) async {
+    _token = await storage.read(key: 'token') ?? '';
+
     try {
-      Dio.FormData formData = Dio.FormData();
-      formData.files.add(
-          MapEntry('image', Dio.MultipartFile.fromFileSync(data['image'])));
-
-      Dio.Response response = await dio().post('/img', data: formData);
-
-      if (response.statusCode == 200) {
-        _user = User();
-        _user.avatar = response.data['avatar'];
-        notifyListeners();
-      } else {
-        print('Error: ${response.statusCode}');
-        print(response.data);
-      }
+      Dio.Response response = await dio().post('/register/profile_photo',
+          data: formData,
+          options: Dio.Options(headers: {'Authorization': 'Bearer $_token'}));
+      // Navigate to the next screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TagSelectScreen()),
+      );
     } catch (e) {
-      print('Exception: $e');
+      print(e);
     }
   }
 
@@ -118,7 +112,7 @@ class Register extends ChangeNotifier {
         // Save token in secure storage
         _token = response.data.toString();
         print(_token);
-        storeToken(token: _token!);
+        storeToken(token: _token);
         print(storage.read(key: 'token'));
         notifyListeners();
         // Next screen to upload profile photo
@@ -127,10 +121,7 @@ class Register extends ChangeNotifier {
         // );
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const RegisterProfilePhotoScreen()));
-        // Return pop until to specific screen
-        // Navigator.of(context).popUntil((route) => route.isFirst);
       } else {
-        // Manejar el caso de un error en la respuesta de la API
         print('Error: ${response.statusCode}');
         print(response.data);
       }
@@ -142,5 +133,6 @@ class Register extends ChangeNotifier {
 
   void storeToken({required String token}) async {
     storage.write(key: 'token', value: token);
+    notifyListeners();
   }
 }
