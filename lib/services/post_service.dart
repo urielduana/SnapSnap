@@ -38,7 +38,7 @@ class PostService {
 
       // Hacer la solicitud POST al servidor utilizando Dio
       Response response = await _dio.post(
-        'http://3.136.234.107:8000/api/img',
+        'http://18.118.200.206:8000/api/img',
         data: formData,
       );
 

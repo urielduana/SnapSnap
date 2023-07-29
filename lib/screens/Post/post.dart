@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapsnap/services/post_service.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Post extends StatefulWidget {
@@ -46,9 +45,10 @@ class _PostState extends State<Post> {
     _Tag(21, 'Animals'),
   ];
 
-  _Tag? _selectedTag; // Tag seleccionado por el usuario
-  final List<_Tag> _selectedTags =
-      []; // Lista para mantener los tags seleccionados
+  //Tag seleccionado
+  _Tag? _selectedTag;
+  // Lista tags
+  final List<_Tag> _selectedTags = [];
 
   @override
   void initState() {
@@ -88,7 +88,7 @@ class _PostState extends State<Post> {
                       padding: const EdgeInsets.all(8.0),
                       child: Stack(
                         children: [
-                          Container(
+                          SizedBox(
                             width: 150,
                             child: Image.file(
                               _selectedImages[index],
@@ -99,7 +99,7 @@ class _PostState extends State<Post> {
                             right: 0,
                             top: 0,
                             child: IconButton(
-                              icon: Icon(Icons.close),
+                              icon: const Icon(Icons.close),
                               onPressed: () {
                                 setState(() {
                                   _selectedImages.removeAt(index);
@@ -179,7 +179,7 @@ class _PostState extends State<Post> {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       vertical:
-                          16), // Ajustar el padding vertical según tus necesidades
+                          16),
                 ),
                 child: const Text('Publish'),
               ),
@@ -190,12 +190,14 @@ class _PostState extends State<Post> {
     );
   }
 
+  // Activar Publish si hay caption e imágenes
   void _updatePublishButtonState(bool hasCaption, bool hasImages) {
     setState(() {
       _isPublishButtonEnabled = hasCaption && hasImages;
     });
   }
 
+  // Seleccionar imágenes de la galería
   Future<void> _selectImagesFromGallery() async {
     final List<XFile> images = await ImagePicker().pickMultiImage();
     setState(() {
@@ -203,13 +205,13 @@ class _PostState extends State<Post> {
     });
   }
 
+  // Enviar datos al servidor
   Future<void> _uploadDataToServer() async {
     try {
-      // Obtener una lista de IDs de tags seleccionados
+      // Obtener los id's de los tags seleccionados
       List<int> tagIds = _selectedTags.map((tag) => tag.id).toList();
-
+      // Si no se seleccionó ningún tag, agregar el tag por defecto con 1
       if (tagIds.isEmpty) {
-        // Si no se seleccionó ningún tag, agregar el tag por defecto con ID 1
         tagIds.add(1);
       }
 

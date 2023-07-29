@@ -3,7 +3,7 @@ import 'dart:convert';
 
 
 Future<void> updateTags(List<Map<String, dynamic>> selectedTags) async {
-  const url = 'http://3.136.234.107:8000/api/tags'; // Reemplaza con la URL real del API de Laravel
+  const url = 'http://18.118.200.206:8000/api/tags';
 
   final dio = Dio();
   
