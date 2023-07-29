@@ -2,15 +2,23 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 class PostService {
-  static Dio _dio = Dio();
+  static final Dio _dio = Dio();
 
+  // token de autenticación
+  static void setAuthToken(String? authToken) {
+    if (authToken != null) {
+      _dio.options.headers['Authorization'] = 'Bearer $authToken';
+    }
+  }
+
+  //  Obtener los posts del servidor
   static Future<void> uploadPost({
     required String caption,
     required List<int> tags,
     required List<File> images,
   }) async {
     try {
-      // Preparar los datos para enviar al servidor
+      // Preparar los datos para enviarlos al servidor
       FormData formData = FormData();
       formData.fields.add(MapEntry('caption', caption));
       formData.fields.add(MapEntry('tags', tags.map((tagId) => tagId.toString()).join(',')));
@@ -19,10 +27,14 @@ class PostService {
         File file = images[i];
         String fileName = file.path.split('/').last;
         formData.files.add(MapEntry(
-          'images[]', // Use 'images[]' to represent an array of images
+          'images[]',
           await MultipartFile.fromFile(file.path, filename: fileName),
         ));
       }
+
+      // Imprimir el token para ver que se envía correctamente
+      String? authToken = _dio.options.headers['Authorization'];
+      print('Token de autenticación: $authToken');
 
       // Hacer la solicitud POST al servidor utilizando Dio
       Response response = await _dio.post(
@@ -30,7 +42,7 @@ class PostService {
         data: formData,
       );
 
-      // Procesar la respuesta del servidor si es necesario.
+      // Respuesta
       if (response.statusCode == 200) {
         print('Response from server:');
         print(response.data);

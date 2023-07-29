@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapsnap/services/post_service.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Post extends StatefulWidget {
   final File? selectedImage;
@@ -175,12 +176,12 @@ class _PostState extends State<Post> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
-                child: const Text('Publish'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       vertical:
                           16), // Ajustar el padding vertical según tus necesidades
                 ),
+                child: const Text('Publish'),
               ),
             ],
           ),
@@ -196,12 +197,10 @@ class _PostState extends State<Post> {
   }
 
   Future<void> _selectImagesFromGallery() async {
-    final List<XFile>? images = await ImagePicker().pickMultiImage();
-    if (images != null) {
-      setState(() {
-        _selectedImages.addAll(images.map((image) => File(image.path)));
-      });
-    }
+    final List<XFile> images = await ImagePicker().pickMultiImage();
+    setState(() {
+      _selectedImages.addAll(images.map((image) => File(image.path)));
+    });
   }
 
   Future<void> _uploadDataToServer() async {
@@ -214,20 +213,28 @@ class _PostState extends State<Post> {
         tagIds.add(1);
       }
 
-      print('Data to be sent:');
-      print('caption: ${_captionController.text}');
-      print('tags: $tagIds');
-      print('images: $_selectedImages');
+      // Obtener el token de autenticación desde el almacenamiento seguro
+      final storage = FlutterSecureStorage();
+      String? authToken = await storage.read(key: 'token');
 
-      await PostService.uploadPost(
-        caption: _captionController.text,
-        tags: tagIds, // Enviar solo los IDs de los tags seleccionados
-        images: _selectedImages,
-      );
-      // Si el envío fue exitoso, puedes mostrar algún mensaje al usuario aquí.
+      if (authToken != null) {
+        // Configurar el token de autenticación en el servicio PostService
+        PostService.setAuthToken(authToken);
+
+        // Llamar al método uploadPost del servicio PostService
+        await PostService.uploadPost(
+          caption: _captionController.text,
+          tags: tagIds,
+          images: _selectedImages,
+        );
+      } else {
+        // Manejar el caso en que el token de autenticación sea nulo
+        print('El token de autenticación es nulo');
+      }
     } catch (e) {
-      // Si hubo un error al enviar los datos, puedes manejarlo aquí.
+      // Manejar errores si ocurre algún problema en la solicitud HTTP.
       print('Error al enviar los datos al servidor: $e');
+      throw Exception('Error en la solicitud al servidor.');
     }
   }
 }
