@@ -49,96 +49,75 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
   Widget build(BuildContext context) {
     final register = context.watch<Register>();
     // Verifies if the tags have been indexed
-    if (indexedTags.isEmpty == true) {
-      return Scaffold(
-          appBar: AppBar(
-            title: const Text('Favorite Tags'),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => MyApp()),
-                    );
-                  },
-                  child: const Text('Skip',
-                      style: TextStyle(color: Colors.white))),
-            ],
-          ),
-          body: const SafeArea(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          ));
-    } else {
-      return Scaffold(
-        // AppBar with the title of the screen and skip button
-        appBar: AppBar(
-          title: const Text('Favorite Tags'),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => MyApp()),
-                  );
-                },
-                child:
-                    const Text('Skip', style: TextStyle(color: Colors.white))),
-          ],
+    return Scaffold(
+      // AppBar with the title of the screen and skip button
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: const Text('Favorite Tags'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => MyApp()),
+                );
+              },
+              child: const Text('Skip', style: TextStyle(color: Colors.white))),
+        ],
+      ),
+      body: SafeArea(
+        // Generates a list with all the content of the indexed tags request
+        child: ListView.builder(
+          itemCount: indexedTags.length,
+          itemBuilder: (BuildContext context, int index) {
+            final tag = indexedTags[index];
+            return ListTile(
+              title: Row(children: [
+                Expanded(
+                  child: Text(tag['tag_name']),
+                ),
+                // Change button between add and remove if the tag is selected from the array of objects
+                // Background color purple if the tag is not selected
+                if (selectedTags.any((element) => element['id'] == tag['id']))
+                  TextButton(
+                      onPressed: () {
+                        removeIdSelectedTags(tag['id']);
+                        setState(() {});
+                      },
+                      child: const Text('Remove'))
+                else
+                  TextButton(
+                      onPressed: () {
+                        addIdToSelectedTags(tag['id']);
+                        setState(() {});
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: const Color(0xFF381E72),
+                      ),
+                      child: const Text('Add',
+                          style: TextStyle(color: Colors.white))),
+              ]),
+            );
+          },
         ),
-        body: SafeArea(
-          // Generates a list with all the content of the indexed tags request
-          child: ListView.builder(
-            itemCount: indexedTags.length,
-            itemBuilder: (BuildContext context, int index) {
-              final tag = indexedTags[index];
-              return ListTile(
-                title: Row(children: [
-                  Expanded(
-                    child: Text(tag['tag_name']),
-                  ),
-                  // Change button between add and remove if the tag is selected from the array of objects
-                  // Background color purple if the tag is not selected
-                  if (selectedTags.any((element) => element['id'] == tag['id']))
-                    TextButton(
-                        onPressed: () {
-                          removeIdSelectedTags(tag['id']);
-                          setState(() {});
-                        },
-                        child: const Text('Remove'))
-                  else
-                    TextButton(
-                        onPressed: () {
-                          addIdToSelectedTags(tag['id']);
-                          setState(() {});
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: const Color(0xFF381E72),
-                        ),
-                        child: const Text('Add',
-                            style: TextStyle(color: Colors.white))),
-                ]),
-              );
-            },
-          ),
-        ),
-        floatingActionButton: selectedTags.isEmpty == false
-            ? FloatingActionButton.extended(
-                onPressed: () {
-                  // Send dato to provider}
-                  // Map data only saves the id of the tags
-                  Map data = {
-                    'favorite_tags': selectedTags,
-                  };
+      ),
+      floatingActionButton: selectedTags.isEmpty == false
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                // Send dato to provider}
+                // Map data only saves the id of the tags
+                Map data = {
+                  'favorite_tags': selectedTags,
+                };
 
-                  Provider.of<Register>(context, listen: false)
-                      .uploadFavoriteTags(data, context);
-                },
-                label: const Text('Save'),
-                icon: const Icon(CupertinoIcons.checkmark_alt),
-                backgroundColor: const Color(0xFF381E72),
-              )
-            : null,
-      );
-    }
+                Provider.of<Register>(context, listen: false)
+                    .uploadFavoriteTags(data, context);
+              },
+              label: const Text('Save'),
+              icon: const Icon(CupertinoIcons.checkmark_alt),
+              backgroundColor: const Color(0xFF381E72),
+            )
+          : null,
+    );
   }
 }

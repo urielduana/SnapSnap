@@ -39,12 +39,11 @@ class _RegisterProfilePhotoScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RegisterAppBar(),
-      // AppBar(
-      //   title: const Text("Sign Up"),
-      //   centerTitle: true,
-      //   automaticallyImplyLeading: false,
-      // ),
+      appBar: AppBar(
+        title: const Text("Sign Up"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
