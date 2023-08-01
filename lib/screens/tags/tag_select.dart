@@ -16,21 +16,21 @@ class TagSelectScreen extends StatefulWidget {
 
 class _TagSelectScreenState extends State<TagSelectScreen> {
   final storage = new FlutterSecureStorage();
-  List<Map<String, dynamic>> indexedTags = [];
+  late Future<List<Map<String, dynamic>>> indexedTagsFuture;
   List<Map<String, dynamic>> selectedTags = [];
+
   @override
   void initState() {
     super.initState();
-    indexTags();
+    indexedTagsFuture = indexTags();
   }
 
-  @override
-  // Funtion that makes a Dio request to index all tags in the database
-  void indexTags() async {
+  // Function that makes a Dio request to index all tags in the database
+  Future<List<Map<String, dynamic>>> indexTags() async {
     var token = await storage.read(key: 'token') ?? '';
     Dio.Response response = await dio().get('/favorite_tags/create',
         options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
-    indexedTags = List<Map<String, dynamic>>.from(response.data);
+    return List<Map<String, dynamic>>.from(response.data);
   }
 
   void addIdToSelectedTags(int id) {
@@ -50,61 +50,82 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
     final register = context.watch<Register>();
     // Verifies if the tags have been indexed
     return Scaffold(
-      // AppBar with the title of the screen and skip button
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text('Favorite Tags'),
         actions: [
           TextButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => MyApp()),
-                );
-              },
-              child: const Text('Skip', style: TextStyle(color: Colors.white))),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => MyApp()),
+              );
+            },
+            child: const Text('Skip', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
       body: SafeArea(
-        // Generates a list with all the content of the indexed tags request
-        child: ListView.builder(
-          itemCount: indexedTags.length,
-          itemBuilder: (BuildContext context, int index) {
-            final tag = indexedTags[index];
-            return ListTile(
-              title: Row(children: [
-                Expanded(
-                  child: Text(tag['tag_name']),
-                ),
-                // Change button between add and remove if the tag is selected from the array of objects
-                // Background color purple if the tag is not selected
-                if (selectedTags.any((element) => element['id'] == tag['id']))
-                  TextButton(
-                      onPressed: () {
-                        removeIdSelectedTags(tag['id']);
-                        setState(() {});
-                      },
-                      child: const Text('Remove'))
-                else
-                  TextButton(
-                      onPressed: () {
-                        addIdToSelectedTags(tag['id']);
-                        setState(() {});
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFF381E72),
-                      ),
-                      child: const Text('Add',
-                          style: TextStyle(color: Colors.white))),
-              ]),
-            );
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: indexedTagsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While the request is being processed, show a loading indicator
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              // If there was an error with the request, show an error message
+              return Center(
+                child: Text('Error fetching tags: ${snapshot.error}'),
+              );
+            } else {
+              // If the request completed successfully, build the list with the data
+              List<Map<String, dynamic>> indexedTags = snapshot.data ?? [];
+              return ListView.builder(
+                itemCount: indexedTags.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final tag = indexedTags[index];
+                  return ListTile(
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(tag['tag_name']),
+                        ),
+                        // Change button between add and remove if the tag is selected from the array of objects
+                        // Background color purple if the tag is not selected
+                        if (selectedTags
+                            .any((element) => element['id'] == tag['id']))
+                          TextButton(
+                              onPressed: () {
+                                removeIdSelectedTags(tag['id']);
+                                setState(() {});
+                              },
+                              child: const Text('Remove'))
+                        else
+                          TextButton(
+                              onPressed: () {
+                                addIdToSelectedTags(tag['id']);
+                                setState(() {});
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFF381E72),
+                              ),
+                              child: const Text('Add',
+                                  style: TextStyle(color: Colors.white))),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
           },
         ),
       ),
       floatingActionButton: selectedTags.isEmpty == false
           ? FloatingActionButton.extended(
               onPressed: () {
-                // Send dato to provider}
+                // Send data to provider
                 // Map data only saves the id of the tags
                 Map data = {
                   'favorite_tags': selectedTags,
