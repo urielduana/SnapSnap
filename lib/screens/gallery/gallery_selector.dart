@@ -8,7 +8,10 @@ import 'package:snapsnap/models/file.dart';
 import 'package:flutter_storage_path/flutter_storage_path.dart';
 
 class GallerySelectorScreen extends StatefulWidget {
-  const GallerySelectorScreen({super.key});
+  final List<File> selectedImages;
+
+  const GallerySelectorScreen({Key? key, required this.selectedImages})
+      : super(key: key);
 
   @override
   State<GallerySelectorScreen> createState() => _GallerySelectorScreenState();
@@ -18,6 +21,7 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
   List<FileModel> files = [];
   FileModel? selectedModel;
   String? image;
+
   @override
   void initState() {
     super.initState();
@@ -94,14 +98,15 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
             ),
             const Divider(),
             SizedBox(
-                height: MediaQuery.of(context).size.height * 0.45,
-                child: image != null
-                    ? Image.file(
-                        File(image!),
-                        height: MediaQuery.of(context).size.height * 0.45,
-                        width: MediaQuery.of(context).size.width,
-                      )
-                    : Container()),
+              height: MediaQuery.of(context).size.height * 0.45,
+              child: image != null
+                  ? Image.file(
+                      File(image!),
+                      height: MediaQuery.of(context).size.height * 0.45,
+                      width: MediaQuery.of(context).size.width,
+                    )
+                  : Container(),
+            ),
             const Divider(),
             selectedModel == null && selectedModel!.files.isEmpty
                 ? Container()
@@ -135,8 +140,8 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
         // Open the camera and take a picture
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // Open camera
-            openCamera();
+            // Open camera and add image to the carousel
+            openCameraAndAddToCarousel();
           },
           shape: const CircleBorder(),
           child: const Icon(CupertinoIcons.camera),
@@ -154,11 +159,14 @@ class _GallerySelectorScreenState extends State<GallerySelectorScreen> {
         .toList();
   }
 
-  void openCamera() async {
+  void openCameraAndAddToCarousel() async {
     final XFile? image =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (image != null) {
-      Navigator.of(context).pop(File(image.path));
+      widget.selectedImages.add(File(image.path));
+      setState(() {
+        this.image = image.path;
+      });
     }
   }
 }
