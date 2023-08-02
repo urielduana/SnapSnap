@@ -1,7 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 import 'package:snapsnap/screens/notifications_screen.dart';
 import 'feed_screen.dart';
 import 'search_screen.dart';
+import 'package:snapsnap/screens/Post/post.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
@@ -15,17 +19,38 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   List<Widget> tabs = [
     FeedScreen(),
     SearchScreen(),
-    Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
-    NotificationScreen(),
-    Center(child: Text("Add item", style: TextStyle(color: Colors.white))),
+    const Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
+    const NotificationScreen(),
+    const Post(),
   ];
 
   int currentPage = 0;
 
   setPage(index) {
-    setState(() {
-      currentPage = index;
-    });
+    if (index == 4) {
+      _pickImage();
+    } else {
+      setState(() {
+        currentPage = index;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    File? selectedImage = await Navigator.push<File?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GallerySelectorScreen(selectedImages: [],),
+      ),
+    );
+
+    if (selectedImage != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Post(selectedImage: selectedImage),
+          ));
+    }
   }
 
   @override
@@ -36,7 +61,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade400,
         onPressed: () => setPage(4),
-        child: Icon(
+        child: const Icon(
           Icons.add,
           color: Colors.white,
           size: 30,
@@ -45,10 +70,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
           color: Colors.grey.shade900,
-          shape: CircularNotchedRectangle(),
+          shape: const CircularNotchedRectangle(),
           child: Container(
               height: 80,
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -68,7 +93,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     ),
                     onPressed: () => setPage(1),
                   ),
-                  SizedBox.shrink(),
+                  const SizedBox.shrink(),
                   IconButton(
                     icon: Icon(
                       Icons.person,
@@ -87,35 +112,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   )
                 ],
               ))),
-      // bottomNavigationBar: FlashyTabBar(
-      //   selectedIndex: currentPage,
-      //   showElevation: true,
-      //   onItemSelected: (index) => setState(() {
-      //     currentPage = index;
-      //   }),
-      //   items: [
-      //     FlashyTabBarItem(
-      //       icon: Icon(Icons.event),
-      //       title: Text('Events'),
-      //     ),
-      //     FlashyTabBarItem(
-      //       icon: Icon(Icons.search),
-      //       title: Text('Search'),
-      //     ),
-      //     FlashyTabBarItem(
-      //       icon: Icon(Icons.highlight),
-      //       title: Text('Highlights'),
-      //     ),
-      //     FlashyTabBarItem(
-      //       icon: Icon(Icons.settings),
-      //       title: Text('Settings'),
-      //     ),
-      //     FlashyTabBarItem(
-      //       icon: Icon(Icons.settings),
-      //       title: Text('한국어'),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
