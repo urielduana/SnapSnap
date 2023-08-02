@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapsnap/components/register_appbar.dart';
@@ -24,26 +25,25 @@ class _RegisterProfilePhotoScreenState
 
   void _uploadPhoto(BuildContext context) async {
     if (_selectedImage != null) {
-      Map<String, dynamic> data = {'image': _selectedImage!.path};
-      upImgService.uploadAvatar(data, context);
+      String fileName = _selectedImage!.path.split('/').last;
+      FormData formData = FormData.fromMap({
+        "profile_photo": await MultipartFile.fromFile(
+          _selectedImage!.path,
+          filename: fileName,
+        ),
+      });
+      upImgService.uploadProfilePhoto(formData, context);
     }
-
-    // Navigate to the next screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TagSelectScreen()),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RegisterAppBar(),
-      // AppBar(
-      //   title: const Text("Sign Up"),
-      //   centerTitle: true,
-      //   automaticallyImplyLeading: false,
-      // ),
+      appBar: AppBar(
+        title: const Text("Sign Up"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -180,7 +180,13 @@ class _RegisterProfilePhotoScreenState
                                 padding: const EdgeInsets.only(top: 15),
                                 child: TextButton(
                                   onPressed: () {
-                                    _uploadPhoto(context);
+                                    // Navigate to the next screen
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TagSelectScreen()),
+                                    );
                                   },
                                   style: TextButton.styleFrom(
                                     minimumSize: const Size.fromHeight(50),

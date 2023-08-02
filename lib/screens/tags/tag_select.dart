@@ -1,210 +1,144 @@
+import 'package:dio/dio.dart' as Dio;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:snapsnap/services/upTags.dart';
-import 'package:snapsnap/screens/home_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:snapsnap/main.dart';
+import 'package:snapsnap/services/dio.dart';
+import 'package:snapsnap/services/reg.dart';
 
 class TagSelectScreen extends StatefulWidget {
   const TagSelectScreen({super.key});
 
   @override
-  _TagSelectScreenState createState() => _TagSelectScreenState();
+  State<TagSelectScreen> createState() => _TagSelectScreenState();
 }
 
 class _TagSelectScreenState extends State<TagSelectScreen> {
-  final List<Map<String, dynamic>> tags = [
-    {
-      'id': 2,
-      'name': 'food',
-      'icon': Icons.fastfood,
-    },
-    {
-      'id': 3,
-      'name': 'travel',
-      'icon': Icons.flight_takeoff,
-    },
-    {
-      'id': 4,
-      'name': 'fashion',
-      'icon': Icons.shopping_bag,
-    },
-    {
-      'id': 5,
-      'name': 'fitness',
-      'icon': Icons.fitness_center,
-    },
-    {
-      'id': 6,
-      'name': 'art',
-      'icon': Icons.palette,
-    },
-    {
-      'id': 7,
-      'name': 'music',
-      'icon': Icons.music_note,
-    },
-    {
-      'id': 8,
-      'name': 'photography',
-      'icon': Icons.camera_alt,
-    },
-    {
-      'id': 9,
-      'name': 'technology',
-      'icon': Icons.computer,
-    },
-    {
-      'id': 10,
-      'name': 'sports',
-      'icon': Icons.sports_soccer,
-    },
-    {
-      'id': 11,
-      'name': 'movies',
-      'icon': Icons.movie,
-    },
-    {
-      'id': 12,
-      'name': 'books',
-      'icon': Icons.book,
-    },
-    {
-      'id': 13,
-      'name': 'health',
-      'icon': Icons.favorite,
-    },
-    {
-      'id': 14,
-      'name': 'quotes',
-      'icon': Icons.format_quote,
-    },
-    {
-      'id': 15,
-      'name': 'cars',
-      'icon': Icons.directions_car,
-    },
-    {
-      'id': 16,
-      'name': 'beauty',
-      'icon': Icons.face,
-    },
-    {
-      'id': 17,
-      'name': 'business',
-      'icon': Icons.business,
-    },
-    {
-      'id': 18,
-      'name': 'humor',
-      'icon': Icons.emoji_emotions,
-    },
-    {
-      'id': 19,
-      'name': 'education',
-      'icon': Icons.school,
-    },
-    {
-      'id': 20,
-      'name': 'animals',
-      'icon': Icons.tag_faces,
-    }
-  ];
-
+  final storage = new FlutterSecureStorage();
+  late Future<List<Map<String, dynamic>>> indexedTagsFuture;
   List<Map<String, dynamic>> selectedTags = [];
-  bool tagsSelected = false;
 
-  bool mapEquals(Map<String, dynamic> a, Map<String, dynamic> b) {
-    final nameEquals = a['name'] == b['name'];
-    return nameEquals;
+  @override
+  void initState() {
+    super.initState();
+    indexedTagsFuture = indexTags();
   }
 
-  void toggleTagSelection(Map<String, dynamic> tag) {
-    setState(() {
-      if (selectedTags.any((element) => mapEquals(element, tag))) {
-        selectedTags.removeWhere((element) => mapEquals(element, tag));
-      } else {
-        selectedTags.add({
-          'name': tag['name'],
-          'id': tag['id'],
-        });
-      }
-
-      tagsSelected = selectedTags.isNotEmpty;
-    });
-  }
-  void SelectedTags() {
-    if (selectedTags.isEmpty) {
-      // No se ha seleccionado ningún tag, enviar el valor predeterminado
-      updateTags([
-        {
-          'name': 'public',
-          'id': 1,
-        }
-      ]);
-    } else {
-      // Se han seleccionado tags, enviar los tags seleccionados
-      updateTags(selectedTags);
-    }
-
-    // Redirigir al usuario a la pantalla de inicio
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyHomeScreen()),
-    );
+  // Function that makes a Dio request to index all tags in the database
+  Future<List<Map<String, dynamic>>> indexTags() async {
+    var token = await storage.read(key: 'token') ?? '';
+    Dio.Response response = await dio().get('/favorite_tags/create',
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
+    return List<Map<String, dynamic>>.from(response.data);
   }
 
+  void addIdToSelectedTags(int id) {
+    selectedTags.add({'id': id});
+    print(selectedTags);
+    print(selectedTags.isEmpty);
+  }
+
+  void removeIdSelectedTags(int id) {
+    selectedTags.removeWhere((element) => element['id'] == id);
+    print(selectedTags);
+    print(selectedTags.isEmpty);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final register = context.watch<Register>();
+    // Verifies if the tags have been indexed
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Tags'),
+        automaticallyImplyLeading: false,
         centerTitle: true,
+        title: const Text('Favorite Tags'),
         actions: [
           TextButton(
-            onPressed: SelectedTags,
-            child: Text(tagsSelected ? 'Next' : 'Skip'),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => MyApp()),
+              );
+            },
+            child: const Text('Skip', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: tags.length,
-        itemBuilder: (BuildContext context, int index) {
-          final tag = tags[index];
-          final isSelected =
-              selectedTags.any((element) => mapEquals(element, tag));
-          return ListTile(
-            title: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    child: Text(tag['name']),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    toggleTagSelection(tag);
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.pressed)) {
-                          return Colors.deepPurpleAccent;
-                        }
-                        return isSelected
-                            ? const Color.fromARGB(255, 43, 38, 53)
-                            : const Color(0xFF381E72);
-                      },
+      body: SafeArea(
+        child: FutureBuilder<List<Map<String, dynamic>>>(
+          future: indexedTagsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While the request is being processed, show a loading indicator
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              // If there was an error with the request, show an error message
+              return Center(
+                child: Text('Error fetching tags: ${snapshot.error}'),
+              );
+            } else {
+              // If the request completed successfully, build the list with the data
+              List<Map<String, dynamic>> indexedTags = snapshot.data ?? [];
+              return ListView.builder(
+                itemCount: indexedTags.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final tag = indexedTags[index];
+                  return ListTile(
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(tag['tag_name']),
+                        ),
+                        // Change button between add and remove if the tag is selected from the array of objects
+                        // Background color purple if the tag is not selected
+                        if (selectedTags
+                            .any((element) => element['id'] == tag['id']))
+                          TextButton(
+                              onPressed: () {
+                                removeIdSelectedTags(tag['id']);
+                                setState(() {});
+                              },
+                              child: const Text('Remove'))
+                        else
+                          TextButton(
+                              onPressed: () {
+                                addIdToSelectedTags(tag['id']);
+                                setState(() {});
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: const Color(0xFF381E72),
+                              ),
+                              child: const Text('Add',
+                                  style: TextStyle(color: Colors.white))),
+                      ],
                     ),
-                  ),
-                  child: Text(isSelected ? 'Unfollow' : 'Follow'),
-                ),
-              ],
-            ),
-            onTap: () {
-              toggleTagSelection(tag);
-            },
-          );
-        },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
+      floatingActionButton: selectedTags.isEmpty == false
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                // Send data to provider
+                // Map data only saves the id of the tags
+                Map data = {
+                  'favorite_tags': selectedTags,
+                };
+
+                Provider.of<Register>(context, listen: false)
+                    .uploadFavoriteTags(data, context);
+              },
+              label: const Text('Save'),
+              icon: const Icon(CupertinoIcons.checkmark_alt),
+              backgroundColor: const Color(0xFF381E72),
+            )
+          : null,
     );
   }
 }
