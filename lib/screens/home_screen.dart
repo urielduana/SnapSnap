@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
 import 'package:snapsnap/screens/feed_screen.dart';
 import 'package:snapsnap/screens/floating_action_button_camera.dart';
 import 'package:snapsnap/screens/notifications_screen.dart';
-import 'package:snapsnap/screens/search_screen.dart';
+import 'package:snapsnap/screens/search/search_screen.dart';
 import 'package:snapsnap/services/auth.dart';
 
 class MyHomeScreen extends StatefulWidget {
