@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -8,42 +9,68 @@ class SearchScreen extends StatelessWidget {
   ];
 
   final List<String> users = ['Ana', 'Diana', 'Anastacia'];
+  final List<String> usernames = ['@ana', '@diana', '@anastacia'];
+  final List<bool> isFollowing = [false, true, false];
+
+  @override
+
+  //  function to follow or unfollow a user
+  void followUser(int index) {
+    print('Follow user $index');
+  }
+
+  void unfollowUser(int index) {
+    print('Unfollow user $index');
+  }
+
+  void openProfile(int index) {
+    print('Open profile $index');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: const Text('Search'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: TextField(
                     decoration: InputDecoration(
+                      prefixIcon: Icon(CupertinoIcons.search),
                       hintText: 'Search user',
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.search),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF381E72),
+                  ),
                   onPressed: () {
                     // Lógica de búsqueda
                     FocusScope.of(context).unfocus();
                   },
-                ),
+                  icon: const Icon(CupertinoIcons.search,
+                      color: Colors.white, size: 17),
+                  label: const Text(
+                    'Search',
+                    style: TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                )
               ],
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ListView.builder(
               shrinkWrap: true,
               itemCount: profileImgUrls.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(bottom: 10.0),
+                  margin: const EdgeInsets.only(bottom: 10.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -59,35 +86,51 @@ class SearchScreen extends StatelessWidget {
                                 width: 1,
                               ),
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.network(profileImgUrls[index]),
+                            child: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(profileImgUrls[index]),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text(
                             users[index],
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
-                      Container(
-                        height: 35,
-                        width: 110,
-                        decoration: BoxDecoration(
-                          color: Colors.blue[700],
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Follow',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
+                      if (isFollowing[index])
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(120, 30),
+                            ),
+                            onPressed: () {
+                              unfollowUser(index);
+                            },
+                            icon: const Icon(
+                              CupertinoIcons.checkmark_alt,
+                              size: 15,
+                            ),
+                            label: const Text(
+                              'Following',
+                              style: TextStyle(fontSize: 12),
+                            ))
+                      else
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(120, 30),
+                              backgroundColor: const Color(0xFF381E72),
+                            ),
+                            onPressed: () {
+                              followUser(index);
+                            },
+                            icon: const Icon(CupertinoIcons.add,
+                                size: 15, color: Colors.white),
+                            label: const Text('Follow',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12)))
                     ],
                   ),
                 );
