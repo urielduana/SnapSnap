@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:snapsnap/services/post_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:snapsnap/services/post_service.dart';
+import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 
 class Post extends StatefulWidget {
   final File? selectedImage;
@@ -45,7 +45,7 @@ class _PostState extends State<Post> {
     _Tag(21, 'Animals'),
   ];
 
-  //Tag seleccionado
+  // Tag seleccionado
   _Tag? _selectedTag;
   // Lista tags
   final List<_Tag> _selectedTags = [];
@@ -115,7 +115,22 @@ class _PostState extends State<Post> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _selectImagesFromGallery,
+                onPressed: () async {
+                  File? selectedImage = await Navigator.push<File?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GallerySelectorScreen(
+                        selectedImages: [],
+                      ),
+                    ),
+                  );
+
+                  if (selectedImage != null) {
+                    setState(() {
+                      _selectedImages.add(selectedImage);
+                    });
+                  }
+                },
                 child: const Text('Add Images'),
               ),
               const SizedBox(height: 16),
@@ -197,13 +212,6 @@ class _PostState extends State<Post> {
     });
   }
 
-  // Seleccionar imágenes de la galería
-  Future<void> _selectImagesFromGallery() async {
-    final List<XFile> images = await ImagePicker().pickMultiImage();
-    setState(() {
-      _selectedImages.addAll(images.map((image) => File(image.path)));
-    });
-  }
 
   // Enviar datos al servidor
   Future<void> _uploadDataToServer() async {
