@@ -204,51 +204,72 @@ class _PostState extends State<Post> {
   }
 
   Future<void> _uploadDataToServer() async {
-  try {
-    // Obtener los id's de los tags seleccionados
-    List<int> tagIds = _selectedTag != null
-        ? [_selectedTag!.id]
-        : [1]; // Usar [1] por defecto si _selectedTag es nulo
-
-    // Obtener el token de autenticación desde el almacenamiento seguro
-    final storage = FlutterSecureStorage();
-    String? authToken = await storage.read(key: 'token');
-
-    if (authToken != null) {
-      // Configurar el token de autenticación en el servicio PostService
-      PostService.setAuthToken(authToken);
-
-      // Imprimir los datos que se enviarán al servidor
-      print('Enviando datos al servidor:');
-      print('Caption: ${_captionController.text}');
-      print('Tags: $tagIds');
-      print('Imágenes: $_selectedImages');
-
-      // Llamar al método uploadPost del servicio PostService
-      await PostService.uploadPost(
-        caption: _captionController.text,
-        tags: tagIds,
-        images: _selectedImages,
+    try {
+      // Mostrar el diálogo de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text("Publishing..."),
+              ],
+            ),
+          );
+        },
       );
 
-      print('Datos enviados exitosamente al servidor.');
+      // Obtener los id's de los tags seleccionados
+      List<int> tagIds = _selectedTag != null
+          ? [_selectedTag!.id]
+          : [1]; // Usar [1] por defecto si _selectedTag es nulo
 
-      // Después de publicar el post, navegar a la página HomeScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyHomeScreen(), // Reemplaza HomeScreen con el nombre de tu pantalla principal
-        ),
-      );
-    } else {
-      // Manejar el caso en que el token de autenticación sea nulo
-      print('El token de autenticación es nulo');
+      // Obtener el token de autenticación desde el almacenamiento seguro
+      final storage = FlutterSecureStorage();
+      String? authToken = await storage.read(key: 'token');
+
+      if (authToken != null) {
+        // Configurar el token de autenticación en el servicio PostService
+        PostService.setAuthToken(authToken);
+
+        // Imprimir los datos que se enviarán al servidor
+        print('Enviando datos al servidor:');
+        print('Caption: ${_captionController.text}');
+        print('Tags: $tagIds');
+        print('Imágenes: $_selectedImages');
+
+        // Llamar al método uploadPost del servicio PostService
+        await PostService.uploadPost(
+          caption: _captionController.text,
+          tags: tagIds,
+          images: _selectedImages,
+        );
+
+        print('Datos enviados exitosamente al servidor.');
+
+        // Cerrar el diálogo de carga
+        Navigator.of(context, rootNavigator: true).pop();
+
+        // Navegar a la página HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                MyHomeScreen(), // Reemplaza MyHomeScreen con el nombre correcto
+          ),
+        );
+      } else {
+        // Manejar el caso en que el token de autenticación sea nulo
+        print('El token de autenticación es nulo');
+      }
+    } catch (e) {
+      // Manejar errores si ocurre algún problema en la solicitud HTTP.
+      print('Error al enviar los datos al servidor: $e');
+      throw Exception('Error en la solicitud al servidor.');
     }
-  } catch (e) {
-    // Manejar errores si ocurre algún problema en la solicitud HTTP.
-    print('Error al enviar los datos al servidor: $e');
-    throw Exception('Error en la solicitud al servidor.');
   }
-}
-
 }
