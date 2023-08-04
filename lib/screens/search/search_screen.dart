@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:snapsnap/services/auth.dart';
 
 class SearchScreen extends StatelessWidget {
   final List<String> profileImgUrls = [
@@ -29,9 +31,17 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<Auth>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search'),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Provider.of<Auth>(context, listen: false).logout();
+              },
+              child: const Text('Logout'))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
