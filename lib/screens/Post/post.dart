@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:snapsnap/services/post_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:snapsnap/services/post_service.dart';
+import 'package:snapsnap/screens/gallery/gallery_selector.dart';
+import 'package:snapsnap/screens/home_screen.dart';
 
 class Post extends StatefulWidget {
   final File? selectedImage;
@@ -24,6 +25,7 @@ class _PostState extends State<Post> {
   final TextEditingController _captionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
   final List<_Tag> _availableTags = [
+    _Tag(2, 'Private'),
     _Tag(3, 'Food'),
     _Tag(4, 'Travel'),
     _Tag(5, 'Fashion'),
@@ -45,10 +47,7 @@ class _PostState extends State<Post> {
     _Tag(21, 'Animals'),
   ];
 
-  //Tag seleccionado
   _Tag? _selectedTag;
-  // Lista tags
-  final List<_Tag> _selectedTags = [];
 
   @override
   void initState() {
@@ -56,8 +55,7 @@ class _PostState extends State<Post> {
     if (widget.selectedImage != null) {
       _selectedImages.add(widget.selectedImage!);
     }
-    _selectedTag =
-        null; // Asignar null para que aparezca "Tags" en el DropdownButton
+    _selectedTag = null;
   }
 
   @override
@@ -115,7 +113,22 @@ class _PostState extends State<Post> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _selectImagesFromGallery,
+                onPressed: () async {
+                  File? selectedImage = await Navigator.push<File?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GallerySelectorScreen(
+                        selectedImages: [],
+                      ),
+                    ),
+                  );
+
+                  if (selectedImage != null) {
+                    setState(() {
+                      _selectedImages.add(selectedImage);
+                    });
+                  }
+                },
                 child: const Text('Add Images'),
               ),
               const SizedBox(height: 16),
@@ -124,17 +137,11 @@ class _PostState extends State<Post> {
                 onChanged: (tag) {
                   setState(() {
                     _selectedTag = tag;
-                    if (_selectedTag != null) {
-                      if (!_selectedTags.contains(_selectedTag!)) {
-                        _selectedTags.add(_selectedTag!);
-                      }
-                      _selectedTag = null;
-                    }
                   });
                 },
                 hint: const Text('Tags'),
                 items: [
-                  const DropdownMenuItem<_Tag>(
+                  DropdownMenuItem<_Tag>(
                     value: null,
                     child: Text('Tags'),
                   ),
@@ -149,16 +156,18 @@ class _PostState extends State<Post> {
               const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
-                children: _selectedTags.map((tag) {
-                  return Chip(
-                    label: Text(tag.name),
-                    onDeleted: () {
-                      setState(() {
-                        _selectedTags.remove(tag);
-                      });
-                    },
-                  );
-                }).toList(),
+                children: _selectedTag != null
+                    ? [
+                        Chip(
+                          label: Text(_selectedTag!.name),
+                          onDeleted: () {
+                            setState(() {
+                              _selectedTag = null;
+                            });
+                          },
+                        ),
+                      ]
+                    : [],
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -177,9 +186,7 @@ class _PostState extends State<Post> {
               ElevatedButton(
                 onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical:
-                          16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text('Publish'),
               ),
@@ -190,30 +197,36 @@ class _PostState extends State<Post> {
     );
   }
 
-  // Activar Publish si hay caption e imágenes
   void _updatePublishButtonState(bool hasCaption, bool hasImages) {
     setState(() {
       _isPublishButtonEnabled = hasCaption && hasImages;
     });
   }
 
-  // Seleccionar imágenes de la galería
-  Future<void> _selectImagesFromGallery() async {
-    final List<XFile> images = await ImagePicker().pickMultiImage();
-    setState(() {
-      _selectedImages.addAll(images.map((image) => File(image.path)));
-    });
-  }
-
-  // Enviar datos al servidor
   Future<void> _uploadDataToServer() async {
     try {
+      // Mostrar el diálogo de carga
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text("Publishing..."),
+              ],
+            ),
+          );
+        },
+      );
+
       // Obtener los id's de los tags seleccionados
-      List<int> tagIds = _selectedTags.map((tag) => tag.id).toList();
-      // Si no se seleccionó ningún tag, agregar el tag por defecto con 1
-      if (tagIds.isEmpty) {
-        tagIds.add(1);
-      }
+      List<int> tagIds = _selectedTag != null
+          ? [_selectedTag!.id]
+          : [1]; // Usar [1] por defecto si _selectedTag es nulo
 
       // Obtener el token de autenticación desde el almacenamiento seguro
       final storage = FlutterSecureStorage();
@@ -223,11 +236,31 @@ class _PostState extends State<Post> {
         // Configurar el token de autenticación en el servicio PostService
         PostService.setAuthToken(authToken);
 
+        // Imprimir los datos que se enviarán al servidor
+        print('Enviando datos al servidor:');
+        print('Caption: ${_captionController.text}');
+        print('Tags: $tagIds');
+        print('Imágenes: $_selectedImages');
+
         // Llamar al método uploadPost del servicio PostService
         await PostService.uploadPost(
           caption: _captionController.text,
           tags: tagIds,
           images: _selectedImages,
+        );
+
+        print('Datos enviados exitosamente al servidor.');
+
+        // Cerrar el diálogo de carga
+        Navigator.of(context, rootNavigator: true).pop();
+
+        // Navegar a la página HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                MyHomeScreen(), // Reemplaza MyHomeScreen con el nombre correcto
+          ),
         );
       } else {
         // Manejar el caso en que el token de autenticación sea nulo
