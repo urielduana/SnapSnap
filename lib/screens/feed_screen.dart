@@ -67,214 +67,292 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SnapSnap'),
-      ),
-      body: ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 30),
-                  child: Row(
-                    children: [
-                      // Profile photo
-                      CircleAvatar(
-                        maxRadius: 28,
-                        backgroundImage: NetworkImage(profileImgUrls[index]),
-                      ),
-                      // Columna con el nombre de usuario y el hashtag
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Nombre de usuario
-                            Text(
-                              users[index],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
+        appBar: AppBar(
+          title: const Text('SnapSnap'),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Filters(),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: ScrollPhysics(),
+                itemCount: users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 30),
+                          child: Row(
+                            children: [
+                              // Profile photo
+                              CircleAvatar(
+                                maxRadius: 28,
+                                backgroundImage:
+                                    NetworkImage(profileImgUrls[index]),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  usernames[index],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                Text(
-                                  timeAgo[index],
-                                  style: const TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                            // Hashtag with border
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      width: 1,
+                              // Columna con el nombre de usuario y el hashtag
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Nombre de usuario
+                                    Text(
+                                      users[index],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                      ),
                                     ),
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  child: Text(
-                                    hashtags[index],
-                                    style: TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 10,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          usernames[index],
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        Text(
+                                          timeAgo[index],
+                                          style: const TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            fontWeight: FontWeight.w300,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
+                                    const SizedBox(height: 5),
+                                    // Hashtag with border
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                          ),
+                                          child: Text(
+                                            hashtags[index],
+                                            style: TextStyle(
+                                              fontStyle: FontStyle.italic,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 10,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              ],
-                            )
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
 
-                const SizedBox(height: 8.0),
-                // Carrusel de imágenes o imagen principal
-                imageUrls.length == 1
-                    ? Image.network(
-                        imageUrls[index],
-                        width: 400,
-                        height: 400,
-                        fit: BoxFit.cover,
-                      )
-                    : CarouselSlider(
-                        options: CarouselOptions(
-                          height: 350,
-                          autoPlay: false,
-                          enlargeCenterPage: false,
-                          aspectRatio: 1.0,
-                          enableInfiniteScroll: false,
-                        ),
-                        items: imageUrls.map((url) {
-                          return Builder(
-                            builder: (BuildContext context) {
-                              return Container(
+                        const SizedBox(height: 8.0),
+                        // Carrusel de imágenes o imagen principal
+                        imageUrls.length == 1
+                            ? Image.network(
+                                imageUrls[index],
                                 width: 400,
                                 height: 400,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Image.network(
-                                  url,
-                                  fit: BoxFit.cover,
+                                fit: BoxFit.cover,
+                              )
+                            : CarouselSlider(
+                                options: CarouselOptions(
+                                  height: 350,
+                                  autoPlay: false,
+                                  enlargeCenterPage: false,
+                                  aspectRatio: 1.0,
+                                  enableInfiniteScroll: false,
                                 ),
-                              );
-                            },
-                          );
-                        }).toList(),
-                      ),
-                const SizedBox(height: 8.0),
-                // Contador de Me gusta y comentarios
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      child: Row(
-                        children: [
-                          Icon(
-                            likesCount[index] > 100
-                                ? Icons.favorite
-                                : Icons.favorite_border_rounded,
-                            color: likesCount[index] > 100
-                                ? const Color(0xFF381E72)
-                                : Theme.of(context).colorScheme.onSurface,
-                          ),
-                          SizedBox(width: 4.0),
-                          Text('${likesCount[index]} likes',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              )),
-                        ],
-                      ),
-                      onPressed: () => toggleLike(index),
-                    ),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CommentScreen(
-                                  imageUrl: imageUrls[index],
-                                  user: users[index],
-                                  profileImgUrl: profileImgUrls[index],
-                                  hashtag: hashtags[index],
-                                  imagesCount: imageUrls.length,
-                                  likesCount: likesCount[index],
-                                  commentsCount: commentsCount[index],
-                                ),
+                                items: imageUrls.map((url) {
+                                  return Builder(
+                                    builder: (BuildContext context) {
+                                      return Container(
+                                        width: 400,
+                                        height: 400,
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: Image.network(
+                                          url,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }).toList(),
                               ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 1),
-                            child: ElevatedButton(
-                              onPressed: () {},
+                        const SizedBox(height: 8.0),
+                        // Contador de Me gusta y comentarios
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
                               child: Row(
                                 children: [
                                   Icon(
-                                    CupertinoIcons.chat_bubble_text,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
+                                    likesCount[index] > 100
+                                        ? Icons.favorite
+                                        : Icons.favorite_border_rounded,
+                                    color: likesCount[index] > 100
+                                        ? const Color(0xFF381E72)
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
                                   ),
                                   SizedBox(width: 4.0),
-                                  Text(
-                                    '${commentsCount[index]} comments',
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                  ),
+                                  Text('${likesCount[index]} likes',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      )),
                                 ],
                               ),
+                              onPressed: () => toggleLike(index),
                             ),
-                          ),
+                            Row(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CommentScreen(
+                                          imageUrl: imageUrls[index],
+                                          user: users[index],
+                                          profileImgUrl: profileImgUrls[index],
+                                          hashtag: hashtags[index],
+                                          imagesCount: imageUrls.length,
+                                          likesCount: likesCount[index],
+                                          commentsCount: commentsCount[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 1),
+                                    child: ElevatedButton(
+                                      onPressed: () {},
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            CupertinoIcons.chat_bubble_text,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                          SizedBox(width: 4.0),
+                                          Text(
+                                            '${commentsCount[index]} comments',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                        Divider(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          thickness: 0.5,
+                          height: 50,
+                        )
                       ],
                     ),
-                  ],
-                ),
-                Divider(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  thickness: 0.5,
-                  height: 50,
-                )
-              ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class Filters extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(
+            8,
+            (index) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: FilterTag(),
             ),
-          );
-        },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FilterTag extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.purple,
+                width: 3,
+              ),
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            'Food',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ],
       ),
     );
   }
