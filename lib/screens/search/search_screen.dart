@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/services/auth.dart';
+import 'package:snapsnap/services/dio.dart';
 
 class SearchScreen extends StatelessWidget {
   final List<String> profileImgUrls = [
@@ -14,7 +17,16 @@ class SearchScreen extends StatelessWidget {
   final List<String> usernames = ['@ana', '@diana', '@anastacia'];
   final List<bool> isFollowing = [false, true, false];
 
+  final storage = new FlutterSecureStorage();
+
   @override
+  Future<List<Map<String, dynamic>>> indexTags(searchString) async {
+    var token = await storage.read(key: 'token') ?? '';
+    Dio.Response response = await dio().post('/users/search',
+        data: indexTags,
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
+    return List<Map<String, dynamic>>.from(response.data);
+  }
 
   //  function to follow or unfollow a user
   void followUser(int index) {
