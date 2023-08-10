@@ -71,7 +71,7 @@ class _PostState extends State<Post> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(35.0), // Ajusta el valor del relleno aquí
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -169,7 +169,7 @@ class _PostState extends State<Post> {
                       ]
                     : [],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _descriptionController,
                 onChanged: (text) {
@@ -182,13 +182,17 @@ class _PostState extends State<Post> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 50),
               ElevatedButton(
                 onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF381E72),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Publish'),
+                child: const Text(
+                  'Publish',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
