@@ -22,7 +22,7 @@ class _Tag {
 
 class _PostState extends State<Post> {
   final List<File> _selectedImages = [];
-  final TextEditingController _captionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
   final List<_Tag> _availableTags = [
     _Tag(2, 'Private'),
@@ -60,10 +60,10 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    bool hasCaption = _captionController.text.trim().isNotEmpty;
+    bool hasDescription = _descriptionController.text.trim().isNotEmpty;
     bool hasImages = _selectedImages.isNotEmpty;
 
-    _updatePublishButtonState(hasCaption, hasImages);
+    _updatePublishButtonState(hasDescription, hasImages);
 
     return Scaffold(
       appBar: AppBar(
@@ -171,14 +171,14 @@ class _PostState extends State<Post> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _captionController,
+                controller: _descriptionController,
                 onChanged: (text) {
                   setState(() {
                     _isPublishButtonEnabled = text.trim().isNotEmpty;
                   });
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Caption',
+                  labelText: 'Description',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -197,9 +197,9 @@ class _PostState extends State<Post> {
     );
   }
 
-  void _updatePublishButtonState(bool hasCaption, bool hasImages) {
+  void _updatePublishButtonState(bool hasDescription, bool hasImages) {
     setState(() {
-      _isPublishButtonEnabled = hasCaption && hasImages;
+      _isPublishButtonEnabled = hasDescription && hasImages;
     });
   }
 
@@ -238,13 +238,13 @@ class _PostState extends State<Post> {
 
         // Imprimir los datos que se enviarán al servidor
         print('Enviando datos al servidor:');
-        print('Caption: ${_captionController.text}');
+        print('Description: ${_descriptionController.text}');
         print('Tags: $tagIds');
         print('Imágenes: $_selectedImages');
 
         // Llamar al método uploadPost del servicio PostService
         await PostService.uploadPost(
-          caption: _captionController.text,
+          description: _descriptionController.text,
           tags: tagIds,
           images: _selectedImages,
         );
