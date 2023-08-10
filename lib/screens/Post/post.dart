@@ -60,10 +60,9 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    bool hasDescription = _descriptionController.text.trim().isNotEmpty;
     bool hasImages = _selectedImages.isNotEmpty;
 
-    _updatePublishButtonState(hasDescription, hasImages);
+    _updatePublishButtonState(hasImages);
 
     return Scaffold(
       appBar: AppBar(
@@ -201,9 +200,9 @@ class _PostState extends State<Post> {
     );
   }
 
-  void _updatePublishButtonState(bool hasDescription, bool hasImages) {
+  void _updatePublishButtonState(bool hasImages) {
     setState(() {
-      _isPublishButtonEnabled = hasDescription && hasImages;
+      _isPublishButtonEnabled = hasImages;
     });
   }
 
