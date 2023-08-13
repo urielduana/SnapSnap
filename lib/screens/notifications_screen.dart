@@ -39,10 +39,12 @@ class _NotificationScreen extends State<NotificationScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.transparent,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(
             "Activity",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold),
           ),
           centerTitle: false,
         ),
@@ -102,10 +104,12 @@ class _NotificationScreen extends State<NotificationScreen> {
                     TextSpan(
                         text: notification.name,
                         style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold)),
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.bold)),
                     TextSpan(
                         text: notification.content,
-                        style: TextStyle(color: Colors.black)),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface)),
                     TextSpan(
                       text: notification.timeAgo,
                       style: TextStyle(color: Colors.grey.shade500),
@@ -126,7 +130,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                   height: 35,
                   width: 110,
                   decoration: BoxDecoration(
-                    color: Colors.blue[700],
+                    color: Color(0xFF21005D),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Center(
