@@ -5,7 +5,7 @@ Dio dio() {
   // ios
   // dio.options.baseUrl = 'http://localhost:8000/api/';
   // android
-  dio.options.baseUrl = 'http://18.118.200.206:8000/api/';
+  dio.options.baseUrl = 'http://18.119.140.226:8000/api/';
 
   dio.options.headers['accept'] = 'application/json';
 
