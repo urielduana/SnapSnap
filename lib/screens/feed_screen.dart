@@ -26,15 +26,15 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   Dio _dio = Dio();
-  List<String> usernames = [];
+  List<Map<String, dynamic>> posts = [];
 
   @override
   void initState() {
     super.initState();
-    fetchUsernames();
+    fetchPosts();
   }
 
-  Future<void> fetchUsernames() async {
+  Future<void> fetchPosts() async {
     try {
       final storage = FlutterSecureStorage();
       final authToken = await storage.read(key: 'token');
@@ -44,10 +44,8 @@ class _FeedScreenState extends State<FeedScreen> {
         options: Options(headers: {'Authorization': 'Bearer $authToken'}),
       );
       if (response.statusCode == 200) {
-        final posts = List<Map<String, dynamic>>.from(response.data);
-        final List<String> tempUsernames = posts.map((post) => post['username'].toString()).toList();
         setState(() {
-          usernames = tempUsernames;
+          posts = List<Map<String, dynamic>>.from(response.data);
         });
       } else {
         // Handle error
@@ -68,10 +66,50 @@ class _FeedScreenState extends State<FeedScreen> {
           Filtros(),
           Expanded(
             child: ListView.builder(
-              itemCount: usernames.length,
+              itemCount: posts.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(usernames[index]),
+                final post = posts[index];
+                return Card(
+                  elevation: 2.0,
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(post['url']),
+                          radius: 24,
+                        ),
+                        title: Text(
+                          post['username'] ?? 'Unknown',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(post['created_at'] ?? ''),
+                      ),
+                      Container(
+                        height: 300,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(post['url']),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              post['description'] ?? 'No description',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
