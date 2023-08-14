@@ -3,7 +3,7 @@ import 'dart:convert';
 
 
 Future<void> updateTags(List<Map<String, dynamic>> selectedTags) async {
-  const url = 'http://18.118.200.206:8000/api/tags';
+  const url = 'http://18.119.140.226:8000/api/tags';
 
   final dio = Dio();
   

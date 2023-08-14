@@ -22,7 +22,7 @@ class _Tag {
 
 class _PostState extends State<Post> {
   final List<File> _selectedImages = [];
-  final TextEditingController _captionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   bool _isPublishButtonEnabled = false;
   final List<_Tag> _availableTags = [
     _Tag(2, 'Private'),
@@ -60,10 +60,9 @@ class _PostState extends State<Post> {
 
   @override
   Widget build(BuildContext context) {
-    bool hasCaption = _captionController.text.trim().isNotEmpty;
     bool hasImages = _selectedImages.isNotEmpty;
 
-    _updatePublishButtonState(hasCaption, hasImages);
+    _updatePublishButtonState(hasImages);
 
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +70,7 @@ class _PostState extends State<Post> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(35.0), // Ajusta el valor del relleno aquí
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -169,26 +168,30 @@ class _PostState extends State<Post> {
                       ]
                     : [],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               TextFormField(
-                controller: _captionController,
+                controller: _descriptionController,
                 onChanged: (text) {
                   setState(() {
                     _isPublishButtonEnabled = text.trim().isNotEmpty;
                   });
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Caption',
+                  labelText: 'Description',
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 50),
               ElevatedButton(
                 onPressed: _isPublishButtonEnabled ? _uploadDataToServer : null,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF381E72),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Publish'),
+                child: const Text(
+                  'Publish',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -197,9 +200,9 @@ class _PostState extends State<Post> {
     );
   }
 
-  void _updatePublishButtonState(bool hasCaption, bool hasImages) {
+  void _updatePublishButtonState(bool hasImages) {
     setState(() {
-      _isPublishButtonEnabled = hasCaption && hasImages;
+      _isPublishButtonEnabled = hasImages;
     });
   }
 
@@ -238,13 +241,13 @@ class _PostState extends State<Post> {
 
         // Imprimir los datos que se enviarán al servidor
         print('Enviando datos al servidor:');
-        print('Caption: ${_captionController.text}');
+        print('Description: ${_descriptionController.text}');
         print('Tags: $tagIds');
         print('Imágenes: $_selectedImages');
 
         // Llamar al método uploadPost del servicio PostService
         await PostService.uploadPost(
-          caption: _captionController.text,
+          description: _descriptionController.text,
           tags: tagIds,
           images: _selectedImages,
         );

@@ -13,14 +13,14 @@ class PostService {
 
   //  Obtener los posts del servidor
   static Future<void> uploadPost({
-    required String caption,
+    required String description,
     required List<int> tags,
     required List<File> images,
   }) async {
     try {
       // Preparar los datos para enviarlos al servidor
       FormData formData = FormData();
-      formData.fields.add(MapEntry('caption', caption));
+      formData.fields.add(MapEntry('description', description));
       formData.fields.add(MapEntry('tags', tags.map((tagId) => tagId.toString()).join(',')));
 
       for (int i = 0; i < images.length; i++) {
@@ -38,7 +38,7 @@ class PostService {
 
       // Hacer la solicitud POST al servidor utilizando Dio
       Response response = await _dio.post(
-        'http://18.118.200.206:8000/api/img',
+        'http://18.119.140.226:8000/api/img',
         data: formData,
       );
 
