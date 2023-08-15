@@ -55,6 +55,39 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+Future<void> toggleLike(int postIndex) async {
+  final post = posts[postIndex];
+  final newLikedState = !(post['liked'] ?? false);
+
+  try {
+    final storage = FlutterSecureStorage();
+    final authToken = await storage.read(key: 'token');
+
+    final response = await _dio.post(
+      'http://18.119.140.226:8000/api/posts/${post['id']}/like',
+      options: Options(headers: {'Authorization': 'Bearer $authToken'}),
+      data: {'liked': newLikedState},
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        post['liked'] = newLikedState;
+
+        if (newLikedState) {
+          post['likes'] = (post['likes'] ?? 0) + 1;
+        } else {
+          post['likes'] = (post['likes'] ?? 0) - 1;
+        }
+      });
+    } else {
+      // Handle error
+    }
+  } catch (error) {
+    // Handle error
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,6 +138,17 @@ class _FeedScreenState extends State<FeedScreen> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
+                            TextButton.icon(
+  onPressed: () async {
+    await toggleLike(index); // Llamar a la función con el índice del post
+  },
+  icon: Icon(
+    post['liked'] ? Icons.favorite : Icons.favorite_border,
+    color: post['liked'] ? Colors.red : Colors.grey,
+  ),
+  label: Text('${post['likes'] ?? 0}'),
+),
+
                           ],
                         ),
                       ),
