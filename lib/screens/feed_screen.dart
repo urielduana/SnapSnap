@@ -35,7 +35,6 @@ class _FeedScreenState extends State<FeedScreen> {
     fetchPosts();
   }
 
-  // Función para mostrar el modal de comentarios con un diseño mejorado
   void _showCommentsModal(BuildContext context, List<dynamic> comments) {
     showDialog(
       context: context,
@@ -141,21 +140,21 @@ class _FeedScreenState extends State<FeedScreen> {
                 final comments = post['comments'] as List<dynamic>;
 
                 return Card(
-                  elevation: 2.0,
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  elevation: 4.0,
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage(post['url']),
+                          backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
                           radius: 24,
                         ),
                         title: Text(
-                          post['username'] ?? 'Unknown',
+                          post['username'] ?? 'Unassigned',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text(post['created_at'] ?? ''),
+                        subtitle: Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
                       ),
                       Container(
                         height: 300,
@@ -167,34 +166,48 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              post['description'] ?? 'No description',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              post['description'] ?? '',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
-                            Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
-                            TextButton.icon(
-                              onPressed: () async {
-                                await toggleLike(index);
-                              },
-                              icon: Icon(
-                                post['liked']
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: post['liked'] ? Colors.red : Colors.grey,
-                              ),
-                              label: Text('${post['likes'] ?? 0}'),
-                            ),
-
-                            // Botón para mostrar comentarios en un modal
-                            TextButton(
-                              onPressed: () {
-                                _showCommentsModal(context, comments);
-                              },
-                              child: Text('Ver Comentarios'),
+                            Row(
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () async {
+                                    await toggleLike(index);
+                                  },
+                                  icon: Icon(
+                                    post['liked']
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: post['liked']
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  ),
+                                  label: Text(
+                                    '${post['likes'] ?? 0}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                SizedBox(width: 16.0),
+                                TextButton.icon(
+                                  onPressed: () {
+                                    _showCommentsModal(context, comments);
+                                  },
+                                  icon: Icon(Icons.comment),
+                                  label: Text(
+                                    'Comentarios (${comments.length})',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
