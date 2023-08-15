@@ -12,6 +12,24 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
+List<Collocation> collocationList = [
+  Collocation(
+    name: "astetic",
+    thumbnail:
+        'https://images.unsplash.com/photo-1500305614571-ae5b6592e65d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80', // Reemplaza con la ruta correcta de la imagen
+    tags: ["Tag 1", "Tag 2"],
+    posts: [], // Debes proporcionar una lista de objetos Post si es necesario
+  ),
+  Collocation(
+    name: "dogs",
+    thumbnail:
+        'https://images.unsplash.com/photo-1510771463146-e89e6e86560e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1362&q=80', // Reemplaza con la ruta correcta de la imagen
+    tags: ["Tag 3", "Tag 4"],
+    posts: [], // Debes proporcionar una lista de objetos Post si es necesario
+  ),
+  // Agrega más objetos Collocation según sea necesario
+];
+
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
@@ -133,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                // makeColloction(widget.user!.collocation)
+                makeColloction(collocationList)
               ]),
             ),
             const SizedBox(
@@ -144,113 +162,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// Widget makeColloction(List<Collocation> collocation) {
-//   return Container(
-//     child: Column(
-//       children: <Widget>[
-//         Container(
-//           padding: const EdgeInsets.only(top: 20),
-//           height: 320,
-//           child: ListView.builder(
-//             shrinkWrap: true,
-//             scrollDirection: Axis.horizontal,
-//             itemCount: collocation.length,
-//             itemBuilder: (context, index) {
-//               return AspectRatio(
-//                 aspectRatio: 1.2 / 1,
-//                 child: Column(
-//                   children: <Widget>[
-//                     Expanded(
-//                       child: Container(
-//                           margin: const EdgeInsets.only(right: 20),
-//                           decoration: BoxDecoration(
-//                               image: DecorationImage(
-//                                   image:
-//                                       AssetImage(collocation[index].thumbnail),
-//                                   fit: BoxFit.cover),
-//                               borderRadius: BorderRadius.circular(20),
-//                               color: Colors.orange),
-//                           child: Stack(
-//                               alignment: AlignmentDirectional.bottomCenter,
-//                               children: <Widget>[
-//                                 ClipRRect(
-//                                   borderRadius: BorderRadius.circular(20),
-//                                   child: BackdropFilter(
-//                                     filter: ImageFilter.blur(
-//                                         sigmaX: 10, sigmaY: 10),
-//                                     child: Container(
-//                                         height: 90,
-//                                         padding: const EdgeInsets.symmetric(
-//                                             horizontal: 20),
-//                                         width: double.infinity,
-//                                         decoration: BoxDecoration(
-//                                           borderRadius:
-//                                               BorderRadius.circular(24),
-//                                         ),
-//                                         child: Column(
-//                                           mainAxisAlignment:
-//                                               MainAxisAlignment.center,
-//                                           crossAxisAlignment:
-//                                               CrossAxisAlignment.start,
-//                                           children: <Widget>[
-//                                             Text(
-//                                               collocation[index].name,
-//                                               style: const TextStyle(
-//                                                   color: Colors.white,
-//                                                   fontWeight: FontWeight.w600,
-//                                                   fontSize: 15),
-//                                             ),
-//                                             const SizedBox(
-//                                               height: 5,
-//                                             ),
-//                                             Text(
-//                                               "${collocation[index].tags.length} photos",
-//                                               style: const TextStyle(
-//                                                   color: Colors.white,
-//                                                   fontWeight: FontWeight.w300),
-//                                             )
-//                                           ],
-//                                         )),
-//                                   ),
-//                                 ),
-//                               ])),
-//                     ),
-//                     const SizedBox(
-//                       height: 10,
-//                     ),
-//                     Container(
-//                       height: 32,
-//                       margin: const EdgeInsets.only(right: 20),
-//                       child: ListView.builder(
-//                         scrollDirection: Axis.horizontal,
-//                         itemCount: collocation[index].tags.length,
-//                         itemBuilder: (context, tagIndex) => Container(
-//                           margin: const EdgeInsets.only(right: 10),
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 25, vertical: 5),
-//                           decoration: BoxDecoration(
-//                             borderRadius: BorderRadius.circular(5),
-//                             // color: Colorsys.grey300
-//                           ),
-//                           child: Center(
-//                             child: Text(
-//                               collocation[index].tags[tagIndex],
-//                               style: const TextStyle(),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     )
-//                   ],
-//                 ),
-//               );
-//             },
-//           ),
-//         )
-//       ],
-//     ),
-//   );
-// }
+Widget makeColloction(List<Collocation> collocation) {
+  return Container(
+    child: Column(
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.only(top: 20),
+          height: 325,
+          child: ListView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            itemCount: collocation.length,
+            itemBuilder: (context, index) {
+              return AspectRatio(
+                aspectRatio: 1.2 / 1,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(
+                                      collocation[index].thumbnail),
+                                  fit: BoxFit.cover),
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Stack(
+                              alignment: AlignmentDirectional.bottomCenter,
+                              children: <Widget>[
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                        sigmaX: 10, sigmaY: 10),
+                                    child: Container(
+                                        height: 90,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20),
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(24),
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              collocation[index].name,
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              "${collocation[index].tags.length} photos",
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w300),
+                                            )
+                                          ],
+                                        )),
+                                  ),
+                                ),
+                              ])),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      ],
+    ),
+  );
+}
 
 Widget makeFollowWidget({count, name}) {
   return Row(
