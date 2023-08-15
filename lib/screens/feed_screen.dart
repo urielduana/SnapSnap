@@ -186,7 +186,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                         ? Icons.favorite
                                         : Icons.favorite_border,
                                     color: post['liked']
-                                        ? Colors.red
+                                        ? Color(0xFF381E72)
                                         : Colors.grey,
                                   ),
                                   label: Text(
