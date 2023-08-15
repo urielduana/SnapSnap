@@ -35,6 +35,50 @@ class _FeedScreenState extends State<FeedScreen> {
     fetchPosts();
   }
 
+  // Función para mostrar el modal de comentarios con un diseño mejorado
+  void _showCommentsModal(BuildContext context, List<dynamic> comments) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Comentarios',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              itemCount: comments.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final comment = comments[index];
+                return ListTile(
+                  title: Text(
+                    comment['text'] ?? '',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 4.0),
+                  leading: Icon(Icons.comment),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cerrar',
+                style: TextStyle(fontSize: 16, color: Colors.blue),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> fetchPosts() async {
     try {
       final storage = FlutterSecureStorage();
@@ -48,10 +92,8 @@ class _FeedScreenState extends State<FeedScreen> {
         setState(() {
           posts = List<Map<String, dynamic>>.from(response.data);
         });
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
   }
 
   Future<void> toggleLike(int postIndex) async {
@@ -78,10 +120,8 @@ class _FeedScreenState extends State<FeedScreen> {
             post['likes'] = (post['likes'] ?? 0) - 1;
           }
         });
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
   }
 
   @override
@@ -98,6 +138,8 @@ class _FeedScreenState extends State<FeedScreen> {
               itemCount: posts.length,
               itemBuilder: (context, index) {
                 final post = posts[index];
+                final comments = post['comments'] as List<dynamic>;
+
                 return Card(
                   elevation: 2.0,
                   margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -136,8 +178,7 @@ class _FeedScreenState extends State<FeedScreen> {
                             Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
                             TextButton.icon(
                               onPressed: () async {
-                                await toggleLike(
-                                    index);
+                                await toggleLike(index);
                               },
                               icon: Icon(
                                 post['liked']
@@ -146,6 +187,14 @@ class _FeedScreenState extends State<FeedScreen> {
                                 color: post['liked'] ? Colors.red : Colors.grey,
                               ),
                               label: Text('${post['likes'] ?? 0}'),
+                            ),
+
+                            // Botón para mostrar comentarios en un modal
+                            TextButton(
+                              onPressed: () {
+                                _showCommentsModal(context, comments);
+                              },
+                              child: Text('Ver Comentarios'),
                             ),
                           ],
                         ),
