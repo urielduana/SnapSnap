@@ -1,12 +1,20 @@
-import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/services/dio.dart';
+import 'package:dio/dio.dart' as Dio;
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
+  @override
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
+
   final List<String> profileImgUrls = [
     'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1888&q=80 ',
     'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80',
@@ -20,15 +28,20 @@ class SearchScreen extends StatelessWidget {
   final storage = new FlutterSecureStorage();
 
   @override
-  Future<List<Map<String, dynamic>>> indexTags(searchString) async {
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<List<Map<String, dynamic>>> indexTags(String searchString) async {
     var token = await storage.read(key: 'token') ?? '';
     Dio.Response response = await dio().post('/users/search',
-        data: indexTags,
+        data: {'search': searchString},
         options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
+    print(response.data);
     return List<Map<String, dynamic>>.from(response.data);
   }
 
-  //  function to follow or unfollow a user
   void followUser(int index) {
     print('Follow user $index');
   }
@@ -41,6 +54,25 @@ class SearchScreen extends StatelessWidget {
     print('Open profile $index');
   }
 
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        searchResults.clear();
+      });
+      return;
+    }
+    try {
+      List<Map<String, dynamic>> results = await indexTags(query);
+      print("-----------------");
+      print(results);
+      setState(() {
+        searchResults = results;
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<Auth>(context);
@@ -49,10 +81,11 @@ class SearchScreen extends StatelessWidget {
         title: const Text('Search'),
         actions: [
           ElevatedButton(
-              onPressed: () {
-                Provider.of<Auth>(context, listen: false).logout();
-              },
-              child: const Text('Logout'))
+            onPressed: () {
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            child: const Text('Logout'),
+          )
         ],
       ),
       body: Padding(
@@ -61,35 +94,23 @@ class SearchScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _searchController,
+                    onChanged: _performSearch,
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.search),
                       hintText: 'Search user',
                     ),
                   ),
                 ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF381E72),
-                  ),
-                  onPressed: () {
-                    // Lógica de búsqueda
-                    FocusScope.of(context).unfocus();
-                  },
-                  icon: const Icon(CupertinoIcons.search,
-                      color: Colors.white, size: 17),
-                  label: const Text(
-                    'Search',
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                )
+                // Puedes eliminar el ElevatedButton aquí
               ],
             ),
             const SizedBox(height: 20.0),
             ListView.builder(
               shrinkWrap: true,
-              itemCount: profileImgUrls.length,
+              itemCount: searchResults.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 10.0),
@@ -111,9 +132,15 @@ class SearchScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      users[index],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
+                                      searchResults[index]['name'] ??
+                                          'Name unasigned',
+                                      style: TextStyle(
+                                        // fontWeight: FontWeight.w700,
+                                        fontWeight: searchResults[index]
+                                                    ['username'] !=
+                                                null
+                                            ? FontWeight.w200
+                                            : FontWeight.w700,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -123,9 +150,16 @@ class SearchScreen extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          usernames[index],
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
+                                          (searchResults[index]['username'] !=
+                                                  null
+                                              ? '@${searchResults[index]['username']}'
+                                              : 'Username unasigned'),
+                                          style: TextStyle(
+                                            fontWeight: searchResults[index]
+                                                        ['username'] !=
+                                                    null
+                                                ? FontWeight.w400
+                                                : FontWeight.w200,
                                             fontSize: 13,
                                           ),
                                         ),
@@ -138,36 +172,7 @@ class SearchScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (isFollowing[index])
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              fixedSize: const Size(120, 30),
-                            ),
-                            onPressed: () {
-                              unfollowUser(index);
-                            },
-                            icon: const Icon(
-                              CupertinoIcons.checkmark_alt,
-                              size: 15,
-                            ),
-                            label: const Text(
-                              'Following',
-                              style: TextStyle(fontSize: 12),
-                            ))
-                      else
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              fixedSize: const Size(120, 30),
-                              backgroundColor: const Color(0xFF381E72),
-                            ),
-                            onPressed: () {
-                              followUser(index);
-                            },
-                            icon: const Icon(CupertinoIcons.add,
-                                size: 15, color: Colors.white),
-                            label: const Text('Follow',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12)))
+                      // Resto del código para seguir o dejar de seguir
                     ],
                   ),
                 );
