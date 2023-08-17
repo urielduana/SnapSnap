@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shimmer/shimmer.dart';
 
 void main() {
   runApp(MyApp());
@@ -147,7 +148,8 @@ class _FeedScreenState extends State<FeedScreen> {
                     children: [
                       ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
+                          backgroundImage: NetworkImage(
+                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
                           radius: 24,
                         ),
                         title: Text(
@@ -156,14 +158,32 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                         subtitle: Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
                       ),
-                      Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(post['url']),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      FutureBuilder(
+                        future:
+                            precacheImage(NetworkImage(post['url']), context),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return Container(
+                              height: 300,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(post['url']),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Shimmer.fromColors(
+                              baseColor: Colors.grey[300]!,
+                              highlightColor: Colors.grey[100]!,
+                              child: Container(
+                                height: 300,
+                                color: Colors.white,
+                              ),
+                            );
+                          }
+                        },
                       ),
                       Padding(
                         padding: EdgeInsets.all(16.0),
