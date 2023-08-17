@@ -177,7 +177,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                         : Colors.grey,
                                   ),
                                   label: Text(
-                                    '${post['likes'] ?? 0}',
+                                    '${post['likes'] ?? 0} likes',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -190,7 +190,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                   },
                                   icon: const Icon(Icons.comment),
                                   label: Text(
-                                    'Comentarios (${comments.length})',
+                                    'Comments (${comments.length})',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),
