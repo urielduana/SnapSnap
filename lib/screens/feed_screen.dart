@@ -37,7 +37,7 @@ class _FeedScreenState extends State<FeedScreen> {
     fetchPosts();
   }
 
- void _showCommentsModal(BuildContext context, int postId) {
+  void _showCommentsModal(BuildContext context, int postId) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -109,11 +109,14 @@ class _FeedScreenState extends State<FeedScreen> {
 
                 return Card(
                   elevation: 4.0,
-                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         leading: const CircleAvatar(
                           backgroundImage: NetworkImage(
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
@@ -126,12 +129,13 @@ class _FeedScreenState extends State<FeedScreen> {
                         subtitle: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal:
-                                      6),
+                              margin: const EdgeInsets.only(
+                                  right:
+                                      8.0), // Agregamos un margen a la derecha
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: Colors.blue),
+                                border: Border.all(color: Colors.blue),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -183,40 +187,46 @@ class _FeedScreenState extends State<FeedScreen> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
-                            Row(
-                              children: [
-                                TextButton.icon(
-                                  onPressed: () async {
-                                    await toggleLike(index);
-                                  },
-                                  icon: Icon(
-                                    post['liked']
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: post['liked']
-                                        ? const Color(0xFF381E72)
-                                        : Colors.grey,
+                            const SizedBox(height: 1.0),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await toggleLike(index);
+                                    },
+                                    icon: Icon(
+                                      post['liked']
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: post['liked']
+                                          ? const Color(0xFF381E72)
+                                          : Colors.grey,
+                                    ),
+                                    label: Text(
+                                      '${post['likes'] ?? 0} likes',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
-                                  label: Text(
-                                    '${post['likes'] ?? 0} likes',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
+                                  const SizedBox(width: 16.0),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      _showCommentsModal(context, post['id']);
+                                    },
+                                    icon: const Icon(Icons.comment),
+                                    label: Text(
+                                      'Comments (${comments.length})',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    _showCommentsModal(context,
-                                        post['id']); // Se para el id del post
-                                  },
-                                  icon: const Icon(Icons.comment),
-                                  label: Text(
-                                    'Comments (${comments.length})',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
