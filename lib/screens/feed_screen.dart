@@ -41,7 +41,7 @@ class _FeedScreenState extends State<FeedScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             'Comentarios',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -55,10 +55,10 @@ class _FeedScreenState extends State<FeedScreen> {
                 return ListTile(
                   title: Text(
                     comment['text'] ?? '',
-                    style: TextStyle(fontSize: 16),
+                    style:const TextStyle(fontSize: 16),
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 4.0),
-                  leading: Icon(Icons.comment),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
+                  leading: const Icon(Icons.comment),
                 );
               },
             ),
@@ -68,7 +68,7 @@ class _FeedScreenState extends State<FeedScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
+              child: const Text(
                 'Cerrar',
                 style: TextStyle(fontSize: 16, color: Colors.blue),
               ),
@@ -81,7 +81,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   Future<void> fetchPosts() async {
     try {
-      final storage = FlutterSecureStorage();
+      const storage = FlutterSecureStorage();
       final authToken = await storage.read(key: 'token');
 
       final response = await _dio.get(
@@ -101,7 +101,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final newLikedState = !(post['liked'] ?? false);
 
     try {
-      final storage = FlutterSecureStorage();
+      const storage = FlutterSecureStorage();
       final authToken = await storage.read(key: 'token');
 
       final response = await _dio.post(
@@ -147,14 +147,14 @@ class _FeedScreenState extends State<FeedScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ListTile(
-                        leading: CircleAvatar(
+                        leading: const CircleAvatar(
                           backgroundImage: NetworkImage(
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
                           radius: 24,
                         ),
                         title: Text(
                           post['username'] ?? 'Unassigned',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text('Tag: ${post['tag_name'] ?? 'No tag'}'),
                       ),
@@ -186,13 +186,13 @@ class _FeedScreenState extends State<FeedScreen> {
                         },
                       ),
                       Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               post['description'] ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             Row(
@@ -206,25 +206,25 @@ class _FeedScreenState extends State<FeedScreen> {
                                         ? Icons.favorite
                                         : Icons.favorite_border,
                                     color: post['liked']
-                                        ? Color(0xFF381E72)
+                                        ? const Color(0xFF381E72)
                                         : Colors.grey,
                                   ),
                                   label: Text(
                                     '${post['likes'] ?? 0}',
                                     style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                        const TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                SizedBox(width: 16.0),
+                                const SizedBox(width: 16.0),
                                 TextButton.icon(
                                   onPressed: () {
                                     _showCommentsModal(context, comments);
                                   },
-                                  icon: Icon(Icons.comment),
+                                  icon: const Icon(Icons.comment),
                                   label: Text(
                                     'Comentarios (${comments.length})',
                                     style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                        const TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
@@ -254,8 +254,8 @@ class Filtros extends StatelessWidget {
         child: Row(
           children: List.generate(
             8,
-            (index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            (index) => const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.0),
               child: EtiquetaFiltro(),
             ),
           ),
@@ -266,6 +266,7 @@ class Filtros extends StatelessWidget {
 }
 
 class EtiquetaFiltro extends StatelessWidget {
+  const EtiquetaFiltro({super.key});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -281,7 +282,7 @@ class EtiquetaFiltro extends StatelessWidget {
                 color: Colors.purple,
                 width: 3,
               ),
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: NetworkImage(
                   'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
                 ),
