@@ -19,7 +19,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   List<Widget> tabs = [
     FeedScreen(),
     SearchScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
     // Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
     const NotificationScreen(),
     const Center(
