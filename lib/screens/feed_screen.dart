@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:snapsnap/screens/comment_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,46 +37,12 @@ class _FeedScreenState extends State<FeedScreen> {
     fetchPosts();
   }
 
-  void _showCommentsModal(BuildContext context, List<dynamic> comments) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Comentarios',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          content: Container(
-            width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: comments.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final comment = comments[index];
-                return ListTile(
-                  title: Text(
-                    comment['text'] ?? '',
-                    style:const TextStyle(fontSize: 16),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 4.0),
-                  leading: const Icon(Icons.comment),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Cerrar',
-                style: TextStyle(fontSize: 16, color: Colors.blue),
-              ),
-            ),
-          ],
-        );
-      },
+ void _showCommentsModal(BuildContext context, int postId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CommentScreen(postId: postId),
+      ),
     );
   }
 
@@ -211,20 +178,21 @@ class _FeedScreenState extends State<FeedScreen> {
                                   ),
                                   label: Text(
                                     '${post['likes'] ?? 0}',
-                                    style:
-                                        const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 const SizedBox(width: 16.0),
                                 TextButton.icon(
                                   onPressed: () {
-                                    _showCommentsModal(context, comments);
+                                    _showCommentsModal(context,
+                                        post['id']); // Se para el id del post
                                   },
                                   icon: const Icon(Icons.comment),
                                   label: Text(
                                     'Comentarios (${comments.length})',
-                                    style:
-                                        const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],

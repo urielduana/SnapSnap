@@ -23,13 +23,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     ProfileScreen(),
     // Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
     CommentScreen(
-        imageUrl: "",
-        user: "",
-        profileImgUrl: "",
-        hashtag: "",
-        imagesCount: 2,
-        likesCount: 2,
-        commentsCount: 2),
+      postId: 1,
+    ),
     const Center(
         child: Text("Add item", style: TextStyle(color: Colors.white))),
   ];
