@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class CommentScreen extends StatelessWidget {
+  // Haz el request desde aqui con una funcion async
+  // Solo pasa el id del post
+  // El request debe obtener los datos del post, sus comentarios y datos del usuario que comentaron
+
   final String imageUrl;
   final String user;
   final String profileImgUrl;
@@ -46,153 +50,144 @@ class CommentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Comments'),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        appBar: AppBar(
+          title: Text('Comments'),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Imagen perfil
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: NetworkImage(profileImgUrl),
-                      fit: BoxFit.cover,
+                Row(
+                  children: [
+                    // Imagen perfil
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: NetworkImage(profileImgUrl),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
+                    SizedBox(width: 8.0),
+                    // Columna con el nombre de usuario y el hashtag
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nombre de usuario
+                        Text(
+                          user,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4.0),
+                        // Hashtag
+                        Text(
+                          hashtag,
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                // Carrusel de imágenes o imagen principal
+                imagesCount == 1
+                    ? Image.network(
+                        imageUrl,
+                        width: 400,
+                        height: 400,
+                        fit: BoxFit.cover,
+                      )
+                    : CarouselSlider(
+                        options: CarouselOptions(
+                          height: 350,
+                          autoPlay: false,
+                          enlargeCenterPage: false,
+                          aspectRatio: 1.0,
+                          enableInfiniteScroll: false,
+                        ),
+                        items: imageUrls.map((url) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: 400,
+                                height: 400,
+                                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Image.network(
+                                  url,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.favorite_border_rounded),
+                    Text('${likesCount} me gusta'),
+                    SizedBox(width: 8.0),
+                    Icon(Icons.comment_outlined),
+                    SizedBox(width: 4.0),
+                    Text('${commentsCount} comentarios'),
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  'Comments:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 8.0),
-                // Columna con el nombre de usuario y el hashtag
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(height: 8.0),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: comments.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(profileImgUrls[index]),
+                      ),
+                      title: Text(comments[index]),
+                    );
+                  },
+                ),
+                Row(
                   children: [
-                    // Nombre de usuario
-                    Text(
-                      user,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: TextField(
+                        controller: commentController,
+                        decoration: InputDecoration(
+                          hintText: 'Write a comment...',
+                        ),
                       ),
                     ),
-                    SizedBox(height: 4.0),
-                    // Hashtag
-                    Text(
-                      hashtag,
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        color: Colors.blueGrey,
-                      ),
+                    ElevatedButton(
+                      onPressed: () {
+                        String newComment = commentController.text;
+                        // Aquí puedes realizar alguna acción con el nuevo comentario,
+                        // como enviarlo a una base de datos, actualizar la lista de comentarios, etc.
+                        // También puedes cerrar la pantalla de comentarios si lo deseas.
+                      },
+                      child: Text('Comment'),
                     ),
                   ],
                 ),
               ],
             ),
-            // Carrusel de imágenes o imagen principal
-            imagesCount == 1
-                ? Image.network(
-                    imageUrl,
-                    width: 400,
-                    height: 400,
-                    fit: BoxFit.cover,
-                  )
-                : CarouselSlider(
-                    options: CarouselOptions(
-                      height: 350,
-                      autoPlay: false,
-                      enlargeCenterPage: false,
-                      aspectRatio: 1.0,
-                      enableInfiniteScroll: false,
-                    ),
-                    items: imageUrls.map((url) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: 400,
-                            height: 400,
-                            margin: EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Image.network(
-                              url,
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .center, // Centra los elementos horizontalmente
-              children: [
-                // IconButton(
-                //   icon: Icon(
-                //     likesCount > 100
-                //         ? Icons.favorite
-                //         : Icons.favorite_border_rounded,
-                //     color: likesCount > 100 ? Colors.red : Colors.black,
-                //   ),
-                //   onPressed: () => toggleLike(index),
-                // ),
-                Icon(Icons.favorite_border_rounded),
-                Text('${likesCount} me gusta'),
-                SizedBox(width: 8.0),
-                Icon(Icons.comment_outlined),
-                SizedBox(width: 4.0),
-                Text('${commentsCount} comentarios'),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Text(
-              'Comments:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Expanded(
-              child: ListView.builder(
-                itemCount: comments.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(profileImgUrls[index]),
-                    ),
-                    title: Text(comments[index]),
-                  );
-                },
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: commentController,
-                    decoration: InputDecoration(
-                      hintText: 'Write a comment...',
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    String newComment = commentController.text;
-                    // Aquí puedes realizar alguna acción con el nuevo comentario,
-                    // como enviarlo a una base de datos, actualizar la lista de comentarios, etc.
-                    // También puedes cerrar la pantalla de comentarios si lo deseas.
-                  },
-                  child: Text('Comment'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

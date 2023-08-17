@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
+import 'package:snapsnap/screens/comment_screen.dart';
 import 'package:snapsnap/screens/feed_screen.dart';
 import 'package:snapsnap/screens/floating_action_button_camera.dart';
 import 'package:snapsnap/screens/notifications_screen.dart';
@@ -19,9 +20,16 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   List<Widget> tabs = [
     FeedScreen(),
     SearchScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
     // Center(child: Text("Profile", style: TextStyle(color: Colors.white))),
-    const NotificationScreen(),
+    CommentScreen(
+        imageUrl: "",
+        user: "",
+        profileImgUrl: "",
+        hashtag: "",
+        imagesCount: 2,
+        likesCount: 2,
+        commentsCount: 2),
     const Center(
         child: Text("Add item", style: TextStyle(color: Colors.white))),
   ];

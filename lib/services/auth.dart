@@ -28,7 +28,7 @@ class Auth extends ChangeNotifier {
     } catch (e) {
       if (e is Dio.DioException) {
         if (e.response!.statusCode == 422) {
-          // print('Invalid credentials');
+          print('Invalid credentials');
           _authDenied = true;
           notifyListeners();
         }
