@@ -35,14 +35,10 @@ class _TagSelectScreenState extends State<TagSelectScreen> {
 
   void addIdToSelectedTags(int id) {
     selectedTags.add({'id': id});
-    print(selectedTags);
-    print(selectedTags.isEmpty);
   }
 
   void removeIdSelectedTags(int id) {
     selectedTags.removeWhere((element) => element['id'] == id);
-    print(selectedTags);
-    print(selectedTags.isEmpty);
   }
 
   @override

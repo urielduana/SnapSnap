@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:dio/dio.dart' as Dio;
@@ -5,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snapsnap/models/collocation.dart';
-import 'package:snapsnap/models/user.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/screens/profile/photos_screen.dart';
@@ -39,6 +39,25 @@ List<Collocation> collocationList = [
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? _selectedImage;
+  late Future<Map<String, dynamic>> indexedProfile;
+
+  final storage = new FlutterSecureStorage();
+  @override
+  void initState() {
+    super.initState();
+    indexedProfile = indexProfile();
+  }
+
+  Future<Map<String, dynamic>> indexProfile() async {
+    var token = await storage.read(key: 'token');
+    var user = await storage.read(key: 'user');
+    var userMap = jsonDecode(user!);
+
+    Dio.Response response = await dio().get('/profile/${userMap['id']}',
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
+
+    return Map<String, dynamic>.from(response.data);
+  }
 
   void onTapProfileImage() async {
     File? selectedImage = await Navigator.push<File?>(
@@ -59,130 +78,172 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final storage = new FlutterSecureStorage();
     final auth = Provider.of<Auth>(context);
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-        appBar: AppBar(
-          elevation: 0,
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Provider.of<Auth>(context, listen: false).logout();
-              },
-              child: const Text('Logout'),
-            )
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15)),
-                  color: Theme.of(context).colorScheme.background),
-              child: Column(
+      backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+      appBar: AppBar(
+        elevation: 0,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            child: const Text('Logout'),
+          )
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: indexedProfile,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // While the request is being processed, show a loading indicator
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              // If there was an error with the request, show an error message
+              return Center(
+                child: Text('Error fetching tags: ${snapshot.error}'),
+              );
+            } else {
+              Map<String, dynamic> profileData = snapshot.data!;
+              return Column(
                 children: [
-                  GestureDetector(
-                    onTap: onTapProfileImage,
-                    child: const CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        'https://t3.ftcdn.net/jpg/04/67/63/68/360_F_467636853_Hs8fMr0TucvHVkvO2q0sbksdKU4pdOSQ.jpg',
-                      ),
-                      maxRadius: 50,
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(15),
+                            bottomRight: Radius.circular(15)),
+                        color: Theme.of(context).colorScheme.background),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: onTapProfileImage,
+                          child: const CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              'https://t3.ftcdn.net/jpg/04/67/63/68/360_F_467636853_Hs8fMr0TucvHVkvO2q0sbksdKU4pdOSQ.jpg',
+                            ),
+                            maxRadius: 50,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          // Usar request aqui
+                          (profileData['name'] != null
+                              ? profileData['name']
+                              : '[ Name Unassigned ]'),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: profileData['name'] != null
+                                  ? FontWeight.w600
+                                  : FontWeight.w100),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          (profileData['favorite'] != null
+                              ? '@${profileData['username']}'
+                              : ''),
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: profileData['username'] != null
+                                  ? FontWeight.w600
+                                  : FontWeight.w100,
+                              fontStyle: FontStyle.italic),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            makeFollowWidget(
+                                count: profileData['followers_count'],
+                                name: "Followers"),
+                            Container(
+                              width: 2,
+                              height: 15,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                            ),
+                            makeFollowWidget(
+                                count: profileData['following_count'],
+                                name: "Following"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(profileData['favorite_tags'][0]['tag']
+                            .runtimeType
+                            .toString()),
+                        makeTagsButton(context),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text(
-                    "Bill Macmillan",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Text(
-                    "@annehathaway",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.italic),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      makeFollowWidget(count: 120, name: "Followers"),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(children: [
                       Container(
-                        width: 2,
-                        height: 15,
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.2))),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Tags",
+                                  style: TextStyle(
+                                      // color:Theme.of(context).colorScheme.onSurface,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
+                                ),
+                                Container(
+                                  width: 50,
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  decoration: const BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              color: Color(0xFF381E72),
+                                              width: 2))),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                          ],
+                        ),
                       ),
-                      makeFollowWidget(count: 1520, name: "Following"),
-                    ],
+                      // makeColloction(profileData['favorite_tags'], context),
+                      Text(profileData['favorite_tags'].toString()),
+                    ]),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 200,
                   ),
-                  makeTagsButton(context),
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.2))),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Tags",
-                            style: TextStyle(
-                                // color:Theme.of(context).colorScheme.onSurface,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
-                          ),
-                          Container(
-                            width: 50,
-                            padding: const EdgeInsets.only(bottom: 10),
-                            decoration: const BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color: Color(0xFF381E72), width: 2))),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                    ],
-                  ),
-                ),
-                makeColloction(collocationList, context)
-              ]),
-            ),
-            const SizedBox(
-              height: 200,
-            ),
-          ]),
-        ));
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
-Widget makeColloction(List<Collocation> collocation, BuildContext context) {
+Widget makeColloction(Map<String, dynamic> collocation, BuildContext context) {
   return Container(
     child: Column(
       children: <Widget>[
