@@ -71,18 +71,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<Auth>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Provider.of<Auth>(context, listen: false).logout();
-            },
-            child: const Text('Logout'),
-          )
-        ],
+        actions: [],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
