@@ -20,7 +20,7 @@ class _CommentScreenState extends State<CommentScreen> {
   Dio _dio = Dio();
   List<Map<String, dynamic>> comments = [];
   TextEditingController commentController = TextEditingController();
-  bool isLoading = true; // Indicador de carga
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -36,11 +36,10 @@ class _CommentScreenState extends State<CommentScreen> {
 
       setState(() {
         comments = List<Map<String, dynamic>>.from(response.data);
-        isLoading = false; // La carga ha finalizado
+        isLoading = false;
       });
     } catch (error) {
-      print('Error fetching comments: $error');
-      isLoading = false; // La carga ha finalizado (incluso en caso de error)
+      isLoading = false;
     }
   }
 
@@ -48,28 +47,30 @@ class _CommentScreenState extends State<CommentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comments'),
+        title: const Text('Comments'),
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 'Comments:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               isLoading
-                  ? Center(child: CircularProgressIndicator()) // Mostrar indicador de carga
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator())
                   : ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: comments.length,
                       itemBuilder: (BuildContext context, int index) {
                         final comment = comments[index];
@@ -83,18 +84,18 @@ class _CommentScreenState extends State<CommentScreen> {
                             ),
                           ),
                           title: Text(comment['comment']),
-                          subtitle:
-                              Text('By: ${userComment['username'] ?? 'Unknown'}'),
+                          subtitle: Text(
+                              'By: ${userComment['username'] ?? 'Unknown'}'),
                         );
                       },
                     ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: commentController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Write a comment...',
                       ),
                     ),
@@ -102,10 +103,8 @@ class _CommentScreenState extends State<CommentScreen> {
                   ElevatedButton(
                     onPressed: () {
                       String newComment = commentController.text;
-                      // Perform action with the new comment here, e.g., send it to a database
-                      // You can also close the comment screen if desired
                     },
-                    child: Text('Comment'),
+                    child: const Text('Comment'),
                   ),
                 ],
               ),
