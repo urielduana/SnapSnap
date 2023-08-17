@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -43,6 +44,32 @@ class _CommentScreenState extends State<CommentScreen> {
     }
   }
 
+  Future<void> postComment(String newComment) async {
+    try {
+      final storage = FlutterSecureStorage();
+      String? authToken = await storage.read(key: 'token');
+
+      if (authToken == null) {
+        print('Token not found');
+        return;
+      }
+
+      final response = await _dio.post(
+        'http://18.119.140.226:8000/api/posts/${widget.postId}/comments',
+        data: {'comment': newComment},
+        options: Options(
+          headers: {'Authorization': 'Bearer $authToken'},
+        ),
+      );
+
+      fetchComments();
+
+      commentController.clear();
+    } catch (error) {
+      print('Error posting comment: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,9 +92,7 @@ class _CommentScreenState extends State<CommentScreen> {
               ),
               const SizedBox(height: 8.0),
               isLoading
-                  ? const Center(
-                      child:
-                          CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -103,6 +128,7 @@ class _CommentScreenState extends State<CommentScreen> {
                   ElevatedButton(
                     onPressed: () {
                       String newComment = commentController.text;
+                      postComment(newComment);
                     },
                     child: const Text('Comment'),
                   ),
