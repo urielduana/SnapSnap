@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/cupertino.dart';
@@ -5,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snapsnap/models/collocation.dart';
 import 'package:snapsnap/models/user.dart';
+import 'package:provider/provider.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/screens/profile/photos_screen.dart';
 import 'package:snapsnap/services/dio.dart';
+import 'package:snapsnap/screens/gallery/gallery_selector.dart';
+import 'package:snapsnap/screens/tags/tag_select.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -34,19 +38,37 @@ List<Collocation> collocationList = [
 ];
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  File? _selectedImage;
+
+  void onTapProfileImage() async {
+    File? selectedImage = await Navigator.push<File?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GallerySelectorScreen(selectedImages: []),
+      ),
+    );
+    if (selectedImage != null) {
+      setState(() {
+        _selectedImage = selectedImage;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final storage = new FlutterSecureStorage();
+    final auth = Provider.of<Auth>(context);
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
         appBar: AppBar(
           elevation: 0,
           actions: [
-            Row(
-              children: [
-                PopUpMenu(),
-              ],
-            ),
+            ElevatedButton(
+              onPressed: () {
+                Provider.of<Auth>(context, listen: false).logout();
+              },
+              child: const Text('Logout'),
+            )
           ],
         ),
         body: SingleChildScrollView(
@@ -60,10 +82,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Theme.of(context).colorScheme.background),
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'https://t3.ftcdn.net/jpg/04/67/63/68/360_F_467636853_Hs8fMr0TucvHVkvO2q0sbksdKU4pdOSQ.jpg'),
-                    maxRadius: 50,
+                  GestureDetector(
+                    onTap: onTapProfileImage,
+                    child: const CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        'https://t3.ftcdn.net/jpg/04/67/63/68/360_F_467636853_Hs8fMr0TucvHVkvO2q0sbksdKU4pdOSQ.jpg',
+                      ),
+                      maxRadius: 50,
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -100,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  makeActionButtons(context),
+                  makeTagsButton(context),
                 ],
               ),
             ),
@@ -274,6 +300,7 @@ Widget makeFollowWidget({count, name}) {
   );
 }
 
+//Botton de follow para perfil de terceros
 Widget makeActionButtons(context) {
   return Transform.translate(
     offset: const Offset(0, 20),
@@ -314,59 +341,48 @@ Widget makeActionButtons(context) {
   );
 }
 
-Widget PopUpMenu() {
-  return PopupMenuButton<int>(
-    itemBuilder: (context) => [
-      // PopupMenuItem 1
-      PopupMenuItem(
-        value: 1,
-        // row with 2 children
-        child: Row(
-          children: [
-            Icon(CupertinoIcons.switch_camera,
-                color: Theme.of(context).colorScheme.onSurface), // Icon color
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "Update Profile Photo",
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface), // Text color
-            ),
-          ],
-        ),
+//Botton de tags para perfil propio
+Widget makeTagsButton(context) {
+  return Transform.translate(
+    offset: const Offset(0, 20),
+    child: Container(
+      height: 65,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(horizontal: 40),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Theme.of(context).colorScheme.background,
+          boxShadow: [
+            BoxShadow(
+                color: Theme.of(context).colorScheme.background,
+                blurRadius: 15,
+                offset: const Offset(0, 10))
+          ]),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: MaterialButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                height: double.infinity,
+                elevation: 0,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TagSelectScreen()),
+                  );
+                },
+                color: const Color(0xFF381E72),
+                child: const Text(
+                  "Add New Tags",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )),
+          ),
+        ],
       ),
-      // PopupMenuItem 2
-      PopupMenuItem(
-        value: 2,
-        // row with two children
-        child: Row(
-          children: [
-            Icon(CupertinoIcons.square_arrow_right,
-                color: Theme.of(context).colorScheme.onSurface), // Icon color
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "Logout",
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface), // Text color
-            ),
-          ],
-        ),
-      ),
-    ],
-    offset: Offset(0, 100),
-    // Background color
-    elevation: 2,
-    // on selected we show the dialog box
-    onSelected: (value) {
-      if (value == 1) {
-        AlertDialog();
-        // if value 2 show dialog
-      } else if (value == 2) {
-        AlertDialog();
-      }
-    },
+    ),
   );
 }
