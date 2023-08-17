@@ -30,6 +30,7 @@ class _FeedScreenState extends State<FeedScreen> {
   Dio _dio = Dio();
   List<Map<String, dynamic>> posts = [];
   List<bool> showComments = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -58,9 +59,14 @@ class _FeedScreenState extends State<FeedScreen> {
       if (response.statusCode == 200) {
         setState(() {
           posts = List<Map<String, dynamic>>.from(response.data);
+          isLoading = false;
         });
-      } else {}
-    } catch (error) {}
+      } else {
+        isLoading = false;
+      }
+    } catch (error) {
+      isLoading = false;
+    }
   }
 
   Future<void> toggleLike(int postIndex) async {
@@ -107,120 +113,45 @@ class _FeedScreenState extends State<FeedScreen> {
                 final post = posts[index];
                 final comments = post['comments'] as List<dynamic>;
 
-                return Card(
-                  elevation: 4.0,
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
+                return isLoading
+                    ? CardLoadingIndicator() // Show loading indicator
+                    : Card(
+                        elevation: 4.0,
+                        margin: const EdgeInsets.symmetric(
                             vertical: 8.0, horizontal: 16.0),
-                        leading: const CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
-                          radius: 24,
-                        ),
-                        title: Text(
-                          post['username'] ?? 'Unassigned',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  right:
-                                      8.0), // Agregamos un margen a la derecha
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.blue),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '#${post['tag_name'] ?? 'No tag'}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      FutureBuilder(
-                        future:
-                            precacheImage(NetworkImage(post['url']), context),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return Container(
-                              height: 300,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(post['url']),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Shimmer.fromColors(
-                              baseColor: Colors.grey[300]!,
-                              highlightColor: Colors.grey[100]!,
-                              child: Container(
-                                height: 300,
-                                color: Colors.white,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              post['description'] ?? '',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
-                            ),
-                            const SizedBox(height: 1.0),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16.0),
+                              leading: const CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJGD4o3OwM7OxLiwmYUwfZJuykW5cHKp4AfjKa8AB3EjwCr4mGc1C3pDcHZ5DC2xhLHXs"),
+                                radius: 24,
+                              ),
+                              title: Text(
+                                post['username'] ?? 'Unassigned',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Row(
                                 children: [
-                                  TextButton.icon(
-                                    onPressed: () async {
-                                      await toggleLike(index);
-                                    },
-                                    icon: Icon(
-                                      post['liked']
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: post['liked']
-                                          ? const Color(0xFF381E72)
-                                          : Colors.grey,
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        right:
+                                            8.0), // Agregamos un margen a la derecha
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.blue),
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    label: Text(
-                                      '${post['likes'] ?? 0} likes',
+                                    child: Text(
+                                      '#${post['tag_name'] ?? 'No tag'}',
                                       style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16.0),
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      _showCommentsModal(context, post['id']);
-                                    },
-                                    icon: const Icon(Icons.comment),
-                                    label: Text(
-                                      'Comments (${comments.length})',
-                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.blue,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -228,12 +159,93 @@ class _FeedScreenState extends State<FeedScreen> {
                                 ],
                               ),
                             ),
+                            FutureBuilder(
+                              future: precacheImage(
+                                  NetworkImage(post['url']), context),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return Container(
+                                    height: 300,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(post['url']),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: Container(
+                                      height: 300,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    post['description'] ?? '',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 1.0),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        TextButton.icon(
+                                          onPressed: () async {
+                                            await toggleLike(index);
+                                          },
+                                          icon: Icon(
+                                            post['liked']
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: post['liked']
+                                                ? const Color(0xFF381E72)
+                                                : Colors.grey,
+                                          ),
+                                          label: Text(
+                                            '${post['likes'] ?? 0} likes',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16.0),
+                                        TextButton.icon(
+                                          onPressed: () {
+                                            _showCommentsModal(
+                                                context, post['id']);
+                                          },
+                                          icon: const Icon(Icons.comment),
+                                          label: Text(
+                                            'Comments (${comments.length})',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                );
+                      );
               },
             ),
           ),
@@ -243,26 +255,82 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 }
 
-/* class Filtros extends StatelessWidget {
+class CardLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4.0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: List.generate(
-            8,
-            (index) => const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4.0),
-              child: EtiquetaFiltro(),
+    return Card(
+      elevation: 4.0,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            leading: const CircleAvatar(
+              backgroundColor: Colors.grey,
+              radius: 24,
+            ),
+            title: Container(
+              height: 16,
+              color: Colors.grey,
+            ),
+            subtitle: Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 16,
+                  color: Colors.grey,
+                ),
+              ],
             ),
           ),
-        ),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              height: 300,
+              color: Colors.white,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 16,
+                  width: double.infinity,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 1.0),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 16,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 16.0),
+                      Container(
+                        width: 120,
+                        height: 16,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
-} */
+}
 
 class EtiquetaFiltro extends StatelessWidget {
   const EtiquetaFiltro({super.key});
