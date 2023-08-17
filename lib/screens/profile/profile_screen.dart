@@ -1,10 +1,13 @@
 import 'dart:ui';
-
+import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:snapsnap/models/collocation.dart';
 import 'package:snapsnap/models/user.dart';
+import 'package:snapsnap/services/auth.dart';
+import 'package:snapsnap/screens/profile/photos_screen.dart';
+import 'package:snapsnap/services/dio.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,13 +42,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         appBar: AppBar(
           elevation: 0,
           actions: [
-            IconButton(
-                iconSize: 25,
-                onPressed: () {},
-                icon: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(CupertinoIcons.ellipsis),
-                ))
+            Row(
+              children: [
+                PopUpMenu(),
+              ],
+            ),
           ],
         ),
         body: SingleChildScrollView(
@@ -122,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Collotion",
+                            "Tags",
                             style: TextStyle(
                                 // color:Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
@@ -134,24 +135,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             decoration: const BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
-                                        color: Color(0xFF381E72), width: 3))),
+                                        color: Color(0xFF381E72), width: 2))),
                           )
                         ],
                       ),
                       const SizedBox(
                         width: 20,
                       ),
-                      Text(
-                        "Likes",
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15),
-                      ),
                     ],
                   ),
                 ),
-                makeColloction(collocationList)
+                makeColloction(collocationList, context)
               ]),
             ),
             const SizedBox(
@@ -162,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-Widget makeColloction(List<Collocation> collocation) {
+Widget makeColloction(List<Collocation> collocation, BuildContext context) {
   return Container(
     child: Column(
       children: <Widget>[
@@ -174,74 +168,90 @@ Widget makeColloction(List<Collocation> collocation) {
             scrollDirection: Axis.horizontal,
             itemCount: collocation.length,
             itemBuilder: (context, index) {
-              return AspectRatio(
-                aspectRatio: 1.2 / 1,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                          margin: const EdgeInsets.only(right: 20),
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                      collocation[index].thumbnail),
-                                  fit: BoxFit.cover),
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Stack(
-                              alignment: AlignmentDirectional.bottomCenter,
-                              children: <Widget>[
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                        sigmaX: 10, sigmaY: 10),
-                                    child: Container(
-                                        height: 90,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(24),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              collocation[index].name,
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 15),
+              return GestureDetector(
+                  onTap: () {
+                    // Llama a la función de navegación con el nombre del tag
+                    navigateToPhotosScreen(context, collocation[index].name);
+                  },
+                  child: AspectRatio(
+                    aspectRatio: 1.2 / 1,
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                              margin: const EdgeInsets.only(right: 20),
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          collocation[index].thumbnail),
+                                      fit: BoxFit.cover),
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Stack(
+                                  alignment: AlignmentDirectional.bottomCenter,
+                                  children: <Widget>[
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 10, sigmaY: 10),
+                                        child: Container(
+                                            height: 90,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
                                             ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              "${collocation[index].tags.length} photos",
-                                              style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w300),
-                                            )
-                                          ],
-                                        )),
-                                  ),
-                                ),
-                              ])),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  collocation[index].name,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 15),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  "${collocation[index].tags.length} photos",
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                )
+                                              ],
+                                            )),
+                                      ),
+                                    ),
+                                  ])),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
-              );
+                  ));
             },
           ),
         )
       ],
+    ),
+  );
+}
+
+void navigateToPhotosScreen(BuildContext context, String tagName) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PhotosScreen(tagName: tagName),
     ),
   );
 }
@@ -298,25 +308,65 @@ Widget makeActionButtons(context) {
                   ),
                 )),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: MaterialButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                height: double.infinity,
-                elevation: 0,
-                onPressed: () {},
-                color: Colors.transparent,
-                child: const Text(
-                  "Message",
-                  style: TextStyle(fontWeight: FontWeight.w400),
-                )),
-          )
         ],
       ),
     ),
+  );
+}
+
+Widget PopUpMenu() {
+  return PopupMenuButton<int>(
+    itemBuilder: (context) => [
+      // PopupMenuItem 1
+      PopupMenuItem(
+        value: 1,
+        // row with 2 children
+        child: Row(
+          children: [
+            Icon(CupertinoIcons.switch_camera,
+                color: Theme.of(context).colorScheme.onSurface), // Icon color
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "Update Profile Photo",
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface), // Text color
+            ),
+          ],
+        ),
+      ),
+      // PopupMenuItem 2
+      PopupMenuItem(
+        value: 2,
+        // row with two children
+        child: Row(
+          children: [
+            Icon(CupertinoIcons.square_arrow_right,
+                color: Theme.of(context).colorScheme.onSurface), // Icon color
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "Logout",
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface), // Text color
+            ),
+          ],
+        ),
+      ),
+    ],
+    offset: Offset(0, 100),
+    // Background color
+    elevation: 2,
+    // on selected we show the dialog box
+    onSelected: (value) {
+      if (value == 1) {
+        AlertDialog();
+        // if value 2 show dialog
+      } else if (value == 2) {
+        AlertDialog();
+      }
+    },
   );
 }
