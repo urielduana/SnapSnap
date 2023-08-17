@@ -123,7 +123,28 @@ class _FeedScreenState extends State<FeedScreen> {
                           post['username'] ?? 'Unassigned',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text('#${post['tag_name'] ?? 'No tag'}'),
+                        subtitle: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      6),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Colors.blue),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '#${post['tag_name'] ?? 'No tag'}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       FutureBuilder(
                         future:
