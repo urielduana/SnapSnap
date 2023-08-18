@@ -12,13 +12,16 @@ import 'package:snapsnap/services/dio.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 import 'package:snapsnap/screens/tags/tag_select.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfileScreenSearch extends StatefulWidget {
+  final int userId;
+  const ProfileScreenSearch({required int userId, Key? key})
+      : userId = userId,
+        super(key: key);
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreenSearch> createState() => _ProfileScreenSearchState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenSearchState extends State<ProfileScreenSearch> {
   File? _selectedImage;
   late Future<Map<String, dynamic>> indexedProfile;
 
@@ -31,10 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<Map<String, dynamic>> indexProfile() async {
     var token = await storage.read(key: 'token');
-    var user = await storage.read(key: 'user');
-    var userMap = jsonDecode(user!);
 
-    Dio.Response response = await dio().get('/profile/${userMap['id']}',
+    Dio.Response response = await dio().get('/profile/${widget.userId}',
         options: Dio.Options(headers: {'Authorization': 'Bearer $token'}));
 
     return Map<String, dynamic>.from(response.data);

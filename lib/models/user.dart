@@ -1,6 +1,7 @@
 import 'package:snapsnap/models/collocation.dart';
 
 class User {
+  int? id;
   String? name;
   String? email;
   String? avatar;
@@ -13,6 +14,7 @@ class User {
   late List<Collocation> collocation;
 
   User({
+    this.id,
     this.name,
     this.email,
     this.avatar,
@@ -26,7 +28,8 @@ class User {
   });
 
   User.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
+      : id = json['id'],
+        name = json['name'],
         email = json['email'],
         avatar = json['avatar'],
         username = json['username'],
@@ -36,6 +39,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'email': email,
       'avatar': avatar,
@@ -47,6 +51,7 @@ class User {
   }
 
   clear() {
+    id = null;
     name = null;
     email = null;
     avatar = null;

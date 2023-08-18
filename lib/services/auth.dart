@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,6 +50,7 @@ class Auth extends ChangeNotifier {
         _user = User.fromJson(response.data);
         _token = token;
         storeToken(token: token);
+        storeUser(user: _user);
         notifyListeners();
         // print(_user);
       } catch (e) {
@@ -57,9 +60,16 @@ class Auth extends ChangeNotifier {
   }
 
   void storeToken({required String token}) async {
-    //clean secure storage token key if exists
+    // Clean secure storage token key if exists
     await storage.delete(key: 'token');
     storage.write(key: 'token', value: token);
+  }
+
+  void storeUser({required User user}) async {
+    // Clean secure storage user key if exists
+    await storage.delete(key: 'user');
+    final userJson = jsonEncode(user);
+    storage.write(key: 'user', value: userJson);
   }
 
   void logout() async {

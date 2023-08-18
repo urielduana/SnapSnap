@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:snapsnap/screens/feed_screen.dart';
 import 'package:snapsnap/screens/login_screen.dart';
-import 'package:snapsnap/screens/bottom_navigation_bar_screen.dart';
-import 'package:snapsnap/screens/profile/profile_screen.dart';
-import 'package:snapsnap/screens/comment_screen.dart';
 import 'package:snapsnap/screens/register/register_email_screen.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/services/reg.dart';
