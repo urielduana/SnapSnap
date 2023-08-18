@@ -126,7 +126,7 @@ class _ProfileScreenSearchState extends State<ProfileScreenSearch> {
                           height: 5,
                         ),
                         Text(
-                          (profileData['favorite'] != null
+                          (profileData['username'] != null
                               ? '@${profileData['username']}'
                               : ''),
                           style: TextStyle(

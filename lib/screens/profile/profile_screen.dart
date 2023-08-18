@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:snapsnap/services/auth.dart';
-import 'package:snapsnap/screens/profile/photos_screen.dart';
+// import 'package:snapsnap/screens/profile/photos_screen.dart';
 import 'package:snapsnap/services/dio.dart';
 import 'package:snapsnap/screens/gallery/gallery_selector.dart';
 import 'package:snapsnap/screens/tags/tag_select.dart';
@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: onTapProfileImage,
                           child: const CircleAvatar(
                             backgroundImage: NetworkImage(
-                              'https://t3.ftcdn.net/jpg/04/67/63/68/360_F_467636853_Hs8fMr0TucvHVkvO2q0sbksdKU4pdOSQ.jpg',
+                              'https://source.unsplash.com/random?person',
                             ),
                             maxRadius: 50,
                           ),
@@ -125,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 5,
                         ),
                         Text(
-                          (profileData['favorite'] != null
+                          (profileData['username'] != null
                               ? '@${profileData['username']}'
                               : ''),
                           style: TextStyle(
