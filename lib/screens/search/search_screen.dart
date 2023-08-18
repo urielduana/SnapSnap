@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:snapsnap/screens/profile/profile_screen_search.dart';
 import 'package:snapsnap/services/auth.dart';
 import 'package:snapsnap/services/dio.dart';
 import 'package:dio/dio.dart' as Dio;
@@ -50,6 +51,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void openProfile(int index) {
     print('Open profile $index');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfileScreenSearch(
+          userId: searchResults[index]['id'],
+        ),
+      ),
+    );
   }
 
   Future<void> _performSearch(String query) async {
