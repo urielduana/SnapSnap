@@ -16,7 +16,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   @override
   void initState() {
     super.initState();
-    _emailController.text = "admin@admion.com";
+    _emailController.text = "";
   }
 
   @override

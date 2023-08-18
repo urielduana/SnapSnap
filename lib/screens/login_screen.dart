@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _emailController.text = "admin@admin.com";
+    _emailController.text = "";
     _passwordController.text = "password";
   }
 

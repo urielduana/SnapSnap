@@ -16,7 +16,7 @@ class _RegisterUsernameScreenState extends State<RegisterUsernameScreen> {
   @override
   void initState() {
     super.initState();
-    _usernameController.text = "admin";
+    _usernameController.text = "";
   }
 
   @override
