@@ -99,7 +99,7 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
       body: Column(
         children: [
-          Filtros(),
+          //Filtros(),
           Expanded(
             child: ListView.builder(
               itemCount: posts.length,
@@ -243,7 +243,7 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 }
 
-class Filtros extends StatelessWidget {
+/* class Filtros extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -262,7 +262,7 @@ class Filtros extends StatelessWidget {
       ),
     );
   }
-}
+} */
 
 class EtiquetaFiltro extends StatelessWidget {
   const EtiquetaFiltro({super.key});

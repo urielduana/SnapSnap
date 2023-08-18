@@ -60,15 +60,14 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               onPressed: () => widget.setPage(2),
             ),
             IconButton(
-              icon: Icon(
-                CupertinoIcons.bell,
-                color: widget.currentPage == 3
-                    ? Color(0xFF381E72)
-                    : Theme.of(context).colorScheme.inverseSurface,
-                size: 27,
-              ),
-              onPressed: () => widget.setPage(3),
-            ),
+                icon: Icon(
+                  CupertinoIcons.bell,
+                  color: widget.currentPage == 3
+                      ? Color(0xFF381E72)
+                      : Theme.of(context).colorScheme.inverseSurface,
+                  size: 27,
+                ),
+                onPressed: () {}),
           ],
         ),
       ),
